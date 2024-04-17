@@ -178,21 +178,23 @@ def generate_segmentation_and_train_list(root, line_txt, names):
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--root', required=True, help='The root of the Tusimple dataset')
+    parser.add_argument('--train_root', required=True, help='The root of the Tusimple dataset')
+    parser.add_argument('--test_root', required=True, help='The root of the Tusimple dataset')
+    parser.add_argument('--save_root', required=True, help='The root of the Tusimple dataset')
     return parser
 
 if __name__ == "__main__":
     args = get_args().parse_args()
 
     # training set
-    names,line_txt = get_tusimple_list(args.root,  ['label_data_0601.json','label_data_0531.json','label_data_0313.json'])
+    names,line_txt = get_tusimple_list(args.train_root,  ['label_data_0601.json','label_data_0531.json','label_data_0313.json'])
     # generate segmentation and training list for training
-    generate_segmentation_and_train_list(args.root, line_txt, names)
+    generate_segmentation_and_train_list(args.save_root, line_txt, names)
 
     # testing set
-    names,line_txt = get_tusimple_list(args.root, ['test_tasks_0627.json'])
+    names,line_txt = get_tusimple_list(args.test_root, ['test_tasks_0627.json'])
     # generate testing set for testing
-    with open(os.path.join(args.root,'test.txt'),'w') as fp:
+    with open(os.path.join(args.save_root,'test.txt'),'w') as fp:
         for name in names:
             fp.write(name + '\n')
 
