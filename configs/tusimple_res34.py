@@ -39,3 +39,4 @@ cls_ext_col_w= 1.0
 mean_loss_col_w= 0.05
 eval_mode= 'normal'
 crop_ratio = 0.8
+train_txt_root = '/kaggle/working/'
