@@ -18,6 +18,7 @@ class LaneExternalIterator(object):
         self.batch_size = batch_size
         self.shard_id = shard_id
         self.num_shards = num_shards
+        self.dataset_name = dataset_name
 
         if isinstance(self.list_path, str):
             with open(self.list_path, 'r') as f:
@@ -80,7 +81,7 @@ class LaneExternalIterator(object):
             img_path = os.path.join(self.path, img_name)
             with open(img_path, 'rb') as f:
                 images.append(np.frombuffer(f.read(), dtype=np.uint8))
-            if dataset_name == 'Tusimple':
+            if self.dataset_name == 'Tusimple':
                 img_path = os.path.join(self.path, seg_name.replace("clips", "seg_label")  )
             else:
                 img_path = os.path.join(self.path, seg_name)
