@@ -19,12 +19,12 @@ class LaneExternalIterator(object):
         self.shard_id = shard_id
         self.num_shards = num_shards
 
-        if isinstance(list_path, str):
-            with open(list_path, 'r') as f:
+        if isinstance(self.list_path, str):
+            with open(self.list_path, 'r') as f:
                 total_list = f.readlines()
-        elif isinstance(list_path, list) or isinstance(list_path, tuple):
+        elif isinstance(self.list_path, list) or isinstance(self.list_path, tuple):
             total_list = []
-            for lst_path in list_path:
+            for lst_path in self.list_path:
                 with open(lst_path, 'r') as f:
                     total_list.extend(f.readlines())
         else:
