@@ -81,7 +81,7 @@ class LaneExternalIterator(object):
             with open(img_path, 'rb') as f:
                 images.append(np.frombuffer(f.read(), dtype=np.uint8))
 
-            img_path = os.path.join(self.path, seg_name)
+            img_path = os.path.join(self.path, seg_name.replace("clips", "seg_label")  )
             with open(img_path, 'rb') as f:
                 seg_images.append(np.frombuffer(f.read(), dtype=np.uint8))
 
