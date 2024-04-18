@@ -14,7 +14,7 @@ class LaneExternalIterator(object):
         assert mode in ['train', 'test']
         self.mode = mode
         self.path = path
-        self.list_path = list_path
+        self.list_path = os.path.join(list_path, 'train_gt.txt')
         self.batch_size = batch_size
         self.shard_id = shard_id
         self.num_shards = num_shards
@@ -31,11 +31,11 @@ class LaneExternalIterator(object):
             raise NotImplementedError
         if self.mode == 'train':
             if dataset_name == 'CULane':
-                cache_path = os.path.join(path, 'culane_anno_cache.json')
+                cache_path = os.path.join(list_path, 'culane_anno_cache.json')
             elif dataset_name == 'Tusimple':
-                cache_path = os.path.join(path, 'tusimple_anno_cache.json')
+                cache_path = os.path.join(list_path, 'tusimple_anno_cache.json')
             elif dataset_name == 'CurveLanes':
-                cache_path = os.path.join(path, 'train', 'curvelanes_anno_cache.json')
+                cache_path = os.path.join(list_path, 'train', 'curvelanes_anno_cache.json')
             else:
                 raise NotImplementedError
 
