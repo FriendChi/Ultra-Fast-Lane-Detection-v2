@@ -66,7 +66,7 @@ def get_args():
     parser.add_argument('--selected_lane', default = None, type = int, nargs='+')
     parser.add_argument('--cumsum', default = None, type = str2bool)
     parser.add_argument('--masked', default = None, type = str2bool)
-    
+    parser.add_argument('--train_txt_root', default = '/kaggle/working/', type = str)
     
     return parser
 
