@@ -15,7 +15,7 @@ def get_args():
 if __name__ == '__main__':
     args = get_args().parse_args()
     culane_root = args.root
-    train_list = os.path.join(culane_root, 'list/train_gt.txt')
+    train_list = os.path.join(culane_root, 'list/list/train_gt.txt')
     with open(train_list, 'r') as fp:
         res = fp.readlines()
     cache_dict = {}
