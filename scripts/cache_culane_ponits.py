@@ -8,6 +8,7 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--root', required=True, help='The root of the dataset')
+    parser.add_argument('--save_root', required=True, help='The root of the cache')
     return parser
 
 
@@ -52,7 +53,7 @@ if __name__ == '__main__':
                 pos = (int(point_y[i]) - 250) / 10
                 all_points[lane_order - 1, int(pos), 0] = p1x
         cache_dict[info[0][1:]] = all_points.tolist()
-    with open(os.path.join(culane_root, 'culane_anno_cache.json'), 'w') as f:
+    with open(os.path.join(args.save_root, 'culane_anno_cache.json'), 'w') as f:
         json.dump(cache_dict, f)
 
         
