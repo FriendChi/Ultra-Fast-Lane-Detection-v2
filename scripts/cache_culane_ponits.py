@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
         
         label_path = os.path.join(culane_root, info[1][1:])
-        print(label_path)
+        label_path = os.path.join(label_path.split('/')[0], label_path)  
         label_img = cv2.imread(label_path)[:,:,0]
 
         txt_path = info[0][1:].replace('jpg','lines.txt')
