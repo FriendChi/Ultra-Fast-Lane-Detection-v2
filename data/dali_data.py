@@ -79,10 +79,14 @@ class LaneExternalIterator(object):
             seg_name = seg_name.strip()
             
             if self.dataset_name == 'CULane':
-                    parts = img_name.split('/')  
-                    # 复制最上父路径  
-                    parts.insert(1, parts[0])  
-                    img_name='/'.join(parts)   
+                parts = img_name.split('/')  
+                # 复制最上父路径  
+                parts.insert(1, parts[0])  
+                img_name='/'.join(parts)
+                parts = seg_name.split('/')  
+                # 复制最上父路径  
+                parts.insert(1, parts[0])  
+                seg_name='/'.join(parts)                    
                         
             img_path = os.path.join(self.path, img_name)
 
