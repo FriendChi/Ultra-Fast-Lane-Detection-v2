@@ -22,8 +22,9 @@ if __name__ == '__main__':
     for line in tqdm.tqdm(res):
         info = line.split(' ')
 
-
+        
         label_path = os.path.join(culane_root, info[1][1:])
+        print(label_path)
         label_img = cv2.imread(label_path)[:,:,0]
 
         txt_path = info[0][1:].replace('jpg','lines.txt')
