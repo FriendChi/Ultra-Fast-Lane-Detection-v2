@@ -32,7 +32,7 @@ class LaneExternalIterator(object):
             raise NotImplementedError
         if self.mode == 'train':
             if dataset_name == 'CULane':
-                cache_path = os.path.join(list_path, 'culane_anno_cache.json')
+                cache_path = os.path.join('/kaggle/working/', 'culane_anno_cache.json')
             elif dataset_name == 'Tusimple':
                 cache_path = os.path.join(list_path, 'tusimple_anno_cache.json')
             elif dataset_name == 'CurveLanes':
