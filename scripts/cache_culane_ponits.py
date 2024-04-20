@@ -27,6 +27,7 @@ if __name__ == '__main__':
         label_img = cv2.imread(label_path)[:,:,0]
 
         txt_path = info[0][1:].replace('jpg','lines.txt')
+        txt_path = os.path.join(txt_path.split('/')[0],txt_path)
         txt_path = os.path.join(culane_root, txt_path)
         lanes = open(txt_path, 'r').readlines()
 
