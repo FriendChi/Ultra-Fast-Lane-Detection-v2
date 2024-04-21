@@ -15,7 +15,7 @@ class resnet(torch.nn.Module):
     def __init__(self,layers,pretrained = False):
         super(resnet,self).__init__()
         if layers == '18':
-            model = torchvision.models.resnet18(pretrained=pretrained)
+            model = torchvision.models.resnet18(weights=ResNet18_Weights.DEFAULT)
         elif layers == '34':
             model = torchvision.models.resnet34(pretrained=pretrained)
         elif layers == '50':
