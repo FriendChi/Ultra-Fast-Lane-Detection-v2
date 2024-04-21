@@ -104,7 +104,7 @@ def get_curvelanes_list(root, label_dir):
     
     return names,line_txt
 
-def generate_segmentation_and_train_list(root, line_txt, names, file_name='train_gt.txt', json_name='curvelanes_anno_cache.json'):
+def generate_segmentation_and_train_list(save_root,root, line_txt, names, file_name='train_gt.txt', json_name='curvelanes_anno_cache.json'):
     """
     The lane annotations of the Tusimple dataset is not strictly in order, so we need to find out the correct lane order for segmentation.
     We use the same definition as CULane, in which the four lanes from left to right are represented as 1,2,3,4 in segentation label respectively.
@@ -160,13 +160,14 @@ def generate_segmentation_and_train_list(root, line_txt, names, file_name='train
 
         train_gt_fp.write('train/'+names[i] + ' ' + 'train/' +label_path + ' '+' '.join(list(map(str,bin_label))) + '\n')
     train_gt_fp.close()
-    with open(os.path.join(root, json_name), 'w') as f:
+    with open(os.path.join(save_root, json_name), 'w') as f:
         json.dump(cache_dict, f)
 
 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--root', required=True, help='The root of the CurveLanes dataset')
+    parser.add_argument('--save_root', required=True, help='The save root of the CurveLanes dataset')
     return parser
 
 if __name__ == "__main__":
@@ -175,7 +176,7 @@ if __name__ == "__main__":
 
     names, line_txt = get_curvelanes_list(args.root,  'train')
     # generate training list for training
-    generate_segmentation_and_train_list(os.path.join(args.root, 'train'), line_txt, names)
+    generate_segmentation_and_train_list(args.save_root,os.path.join(args.root, 'train'), line_txt, names)
 
 
     # names, line_txt = get_curvelanes_list(args.root,  'valid')
