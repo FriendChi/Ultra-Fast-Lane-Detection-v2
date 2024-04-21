@@ -110,7 +110,7 @@ def generate_segmentation_and_train_list(save_root,root, line_txt, names, file_n
     We use the same definition as CULane, in which the four lanes from left to right are represented as 1,2,3,4 in segentation label respectively.
     """
     assert os.path.exists(root)
-    train_gt_fp = open(os.path.join(root, file_name), 'w')
+    train_gt_fp = open(os.path.join(save_root, file_name), 'w')
     cache_dict = {}
     if not os.path.exists(os.path.join(root, 'segs')):
         os.mkdir(os.path.join(root, 'segs'))
