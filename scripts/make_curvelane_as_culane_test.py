@@ -7,6 +7,7 @@ import imagesize
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--root', required=True, help='The root of the dataset')
+    parser.add_argument('--save_root', required=True, help='The save root of the dataset')
     return parser
 
 def read_label(label_path, x_factor, y_factor):
@@ -62,7 +63,7 @@ def generate_linestxt_on_curvelane_val():
     res = fp.readlines()
     fp.close()
     res = [os.path.join('valid', r) for r in res]
-    with open(os.path.join(curvelane_val_root, 'valid_for_culane_style.txt'), 'w') as fp:
+    with open(os.path.join(arg.save_root, 'valid_for_culane_style.txt'), 'w') as fp:
         fp.writelines(res)
 
 
