@@ -112,8 +112,8 @@ def generate_segmentation_and_train_list(save_root,root, line_txt, names, file_n
     assert os.path.exists(root)
     train_gt_fp = open(os.path.join(save_root, file_name), 'w')
     cache_dict = {}
-    if not os.path.exists(os.path.join(root, 'segs')):
-        os.mkdir(os.path.join(root, 'segs'))
+    if not os.path.exists(os.path.join(save_root, 'segs')):
+        os.mkdir(os.path.join(save_root, 'segs'))
 
     for i in tqdm.tqdm(range(len(line_txt))):
 
@@ -155,7 +155,7 @@ def generate_segmentation_and_train_list(save_root,root, line_txt, names, file_n
             bin_label[5+idx] = 1
             all_points[5+idx] = spline(np.array(lines[which_lane]), the_anno_row_anchor, ratio_height = rh, ratio_width = rw)
         
-        cv2.imwrite(os.path.join(root,label_path),label)
+        cv2.imwrite(os.path.join(save_root,label_path),label)
         cache_dict['train/'+names[i]] = all_points.tolist()
 
         train_gt_fp.write('train/'+names[i] + ' ' + 'train/' +label_path + ' '+' '.join(list(map(str,bin_label))) + '\n')
