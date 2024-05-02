@@ -94,6 +94,8 @@ class LaneExternalIterator(object):
                 images.append(np.frombuffer(f.read(), dtype=np.uint8))
             if self.dataset_name == 'Tusimple':
                 img_path = os.path.join(self.path, seg_name.replace("clips", "seg_label")  )
+            elif self.dataset_name == 'CurveLanes':
+                img_path = os.path.join('/kaggle/working/', seg_name)
             else:
                 img_path = os.path.join(self.path, seg_name)
             with open(img_path, 'rb') as f:
