@@ -96,6 +96,7 @@ class LaneExternalIterator(object):
                 img_path = os.path.join(self.path, seg_name.replace("clips", "seg_label")  )
             elif self.dataset_name == 'CurveLanes':
                 img_path = os.path.join('/kaggle/working/', seg_name)
+                img_path = img_path.replace('/train/', '/')  
             else:
                 img_path = os.path.join(self.path, seg_name)
             with open(img_path, 'rb') as f:
