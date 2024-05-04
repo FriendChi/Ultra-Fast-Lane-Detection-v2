@@ -32,6 +32,10 @@ def read_label(label_path, x_factor, y_factor):
     return all_lanes
 
 def generate_linestxt_on_curvelane_val():
+    # 指定多级目录的路径
+    nested_folder_path = "/kaggle/working/txt_files"
+    # 使用makedirs()函数创建多级目录，exist_ok=True表示如果目录已存在则不抛出异常
+    os.makedirs(nested_folder_path, exist_ok=True)
     args = get_args().parse_args()
     curvelane_val_root = os.path.join(args.root, 'valid')
 
@@ -54,7 +58,7 @@ def generate_linestxt_on_curvelane_val():
         width, height = imagesize.get(file_path)
 
         culane_style_label = read_label(label_path, x_factor = 2560 / width, y_factor = 1440 / height)
-        culane_style_label_store_path = os.path.join(curvelane_val_root, file).replace('jpg','lines.txt')
+        culane_style_label_store_path = os.path.join(nested_folder_path, file).replace('jpg','lines.txt')
         with open(culane_style_label_store_path, 'w') as f:
             for culane_style_label_i in culane_style_label:
                 f.write(' '.join(culane_style_label_i)+'\n')
