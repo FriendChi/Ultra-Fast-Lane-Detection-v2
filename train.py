@@ -11,13 +11,16 @@ from utils.common import get_work_dir, get_logger
 import time
 from evaluation.eval_wrapper import eval_lane
 
-def train(net, data_loader, loss_dict, optimizer, scheduler,logger, epoch, metric_dict, dataset):
+from model.model_tusimple import parsingNet1
+
+def train(net,teacher_net, data_loader, loss_dict, optimizer, scheduler,logger, epoch, metric_dict, dataset):
     net.train()
+    teacher_net.eval()
     progress_bar = dist_tqdm(train_loader)
     for b_idx, data_label in enumerate(progress_bar):
         global_step = epoch * len(data_loader) + b_idx
 
-        results = inference(net, data_label, dataset)
+        results = inference(net,teacher_net, data_label, dataset)
 
         loss = calc_loss(loss_dict, results, logger, global_step, epoch)
         optimizer.zero_grad()
@@ -26,22 +29,22 @@ def train(net, data_loader, loss_dict, optimizer, scheduler,logger, epoch, metri
         scheduler.step(global_step)
 
 
-        if global_step % 20 == 0:
-            reset_metrics(metric_dict)
-            update_metrics(metric_dict, results)
-            for me_name, me_op in zip(metric_dict['name'], metric_dict['op']):
-                logger.add_scalar('metric/' + me_name, me_op.get(), global_step=global_step)
-            logger.add_scalar('meta/lr', optimizer.param_groups[0]['lr'], global_step=global_step)
+        # if global_step % 20 == 0:
+        #     reset_metrics(metric_dict)
+        #     update_metrics(metric_dict, results)
+        #     for me_name, me_op in zip(metric_dict['name'], metric_dict['op']):
+        #         logger.add_scalar('metric/' + me_name, me_op.get(), global_step=global_step)
+        #     logger.add_scalar('meta/lr', optimizer.param_groups[0]['lr'], global_step=global_step)
 
-            if hasattr(progress_bar,'set_postfix'):
-                kwargs = {me_name: '%.3f' % me_op.get() for me_name, me_op in zip(metric_dict['name'], metric_dict['op'])}
-                new_kwargs = {}
-                for k,v in kwargs.items():
-                    if 'lane' in k:
-                        continue
-                    new_kwargs[k] = v
-                progress_bar.set_postfix(loss = '%.3f' % float(loss), 
-                                        **new_kwargs)
+        #     if hasattr(progress_bar,'set_postfix'):
+        #         kwargs = {me_name: '%.3f' % me_op.get() for me_name, me_op in zip(metric_dict['name'], metric_dict['op'])}
+        #         new_kwargs = {}
+        #         for k,v in kwargs.items():
+        #             if 'lane' in k:
+        #                 continue
+        #             new_kwargs[k] = v
+        #         progress_bar.set_postfix(loss = '%.3f' % float(loss), 
+        #                                 **new_kwargs)
         
 
 if __name__ == "__main__":
@@ -81,7 +84,14 @@ if __name__ == "__main__":
 
     train_loader = get_train_loader(cfg)
     net = get_model(cfg)
-
+    
+    teacher_net = parsingNet1(pretrained = True, backbone='34', num_grid_row = 100, 
+                             num_cls_row = 56, num_grid_col = 100, 
+                             num_cls_col = 41, num_lane_on_row = 4, 
+                             num_lane_on_col = 4, use_aux = False, 
+                             input_height = 320, input_width = 800, 
+                             fc_norm = False).cuda()
+    
     if distributed:
         net = torch.nn.parallel.DistributedDataParallel(net, device_ids = [args.local_rank])
     optimizer = get_optimizer(net, cfg)
@@ -114,7 +124,7 @@ if __name__ == "__main__":
     res = None
     for epoch in range(resume_epoch, cfg.epoch):
 
-        train(net, train_loader, loss_dict, optimizer, scheduler,logger, epoch, metric_dict, cfg.dataset)
+        train(net,teacher_net, train_loader, loss_dict, optimizer, scheduler,logger, epoch, metric_dict, cfg.dataset)
         train_loader.reset()
 
         res = eval_lane(net, cfg, ep = epoch, logger = logger)
