@@ -101,10 +101,23 @@ def merge_config():
 def save_model(net, optimizer, epoch,save_path, distributed):
     if is_main_process():
         model_state_dict = net.state_dict()
+        #调优化器和模型的参数
         state = {'model': model_state_dict, 'optimizer': optimizer.state_dict()}
         # state = {'model': model_state_dict}
+
         assert os.path.exists(save_path)
-        model_path = os.path.join(save_path, 'model_best.pth')
+
+        # 获取指定目录下的所有文件
+        files = os.listdir(save_path)
+        for file in files:
+            # 判断文件是否为.pth文件，并且不是当前要保存的检查点文件
+            if file.endswith('.pth'):
+                file_path = os.path.join(save_path, file)
+                # 删除文件
+                os.remove(file_path)
+
+        model_path = os.path.join(save_path, f'model_{epoch:03d}.pth')
+        #model_path = os.path.join(save_path, 'model_best.pth')
         torch.save(state, model_path)
 
 import pathspec
@@ -194,18 +207,21 @@ def get_train_loader(cfg):
         raise NotImplementedError
     return train_loader 
 
-def inference(net, data_label, dataset):
+def inference(net,teacher_net, data_label, dataset):
     if dataset == 'CurveLanes':
         return inference_curvelanes(net, data_label)
     elif dataset in ['Tusimple', 'CULane']:
-        return inference_culane_tusimple(net, data_label)
+        return inference_culane_tusimple(net,teacher_net, data_label)
     else:
         raise NotImplementedError
 
 def inference_culane_tusimple(net, data_label):
     pred = net(data_label['images'])
+    teacher_pred = teacher_net(data_label['images'])
+    
     cls_out_ext_label = (data_label['labels_row'] != -1).long()
     cls_out_col_ext_label = (data_label['labels_col'] != -1).long()
+    
     res_dict = {'cls_out': pred['loc_row'], 'cls_label': data_label['labels_row'], 'cls_out_col':pred['loc_col'],'cls_label_col':data_label['labels_col'],
             'cls_out_ext':pred['exist_row'], 'cls_out_ext_label':cls_out_ext_label, 'cls_out_col_ext':pred['exist_col'],
                 'cls_out_col_ext_label':cls_out_col_ext_label, 'labels_row_float':data_label['labels_row_float'], 'labels_col_float':data_label['labels_col_float'] }
