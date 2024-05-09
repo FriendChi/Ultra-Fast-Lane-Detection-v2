@@ -4,23 +4,23 @@ import torch.nn.functional as F
 
 import numpy as np
 
-class OhemCELoss(nn.Module):
-    def __init__(self, thresh, n_min, ignore_lb=255, *args, **kwargs):
-        super(OhemCELoss, self).__init__()
-        self.thresh = -torch.log(torch.tensor(thresh, dtype=torch.float)).cuda()
-        self.n_min = n_min
-        self.ignore_lb = ignore_lb
-        self.criteria = nn.CrossEntropyLoss(ignore_index=ignore_lb, reduction='none')
+# class OhemCELoss(nn.Module):
+#     def __init__(self, thresh, n_min, ignore_lb=255, *args, **kwargs):
+#         super(OhemCELoss, self).__init__()
+#         self.thresh = -torch.log(torch.tensor(thresh, dtype=torch.float)).cuda()
+#         self.n_min = n_min
+#         self.ignore_lb = ignore_lb
+#         self.criteria = nn.CrossEntropyLoss(ignore_index=ignore_lb, reduction='none')
 
-    def forward(self, logits, labels):
-        N, C, H, W = logits.size()
-        loss = self.criteria(logits, labels).view(-1)
-        loss, _ = torch.sort(loss, descending=True)
-        if loss[self.n_min] > self.thresh:
-            loss = loss[loss>self.thresh]
-        else:
-            loss = loss[:self.n_min]
-        return torch.mean(loss)
+#     def forward(self, logits, labels):
+#         N, C, H, W = logits.size()
+#         loss = self.criteria(logits, labels).view(-1)
+#         loss, _ = torch.sort(loss, descending=True)
+#         if loss[self.n_min] > self.thresh:
+#             loss = loss[loss>self.thresh]
+#         else:
+#             loss = loss[:self.n_min]
+#         return torch.mean(loss)
 
 def soft_nll(pred, target, ignore_index = -1):
     C = pred.shape[1]
@@ -87,7 +87,19 @@ class SoftmaxFocalLoss(nn.Module):
 
         # import pdb; pdb.set_trace()
         return loss
+        
+class CustomKLDivLoss(nn.Module):
+    def __init__(self):
+        super(CustomKLDivLoss, self).__init__()
 
+    def forward(self, p, q):
+        log_p = F.log_softmax(p, dim=1)  # 对 p 进行对数转换
+        q = F.softmax(q, dim=1)  # 对 q 进行 softmax
+
+        kl_loss = F.kl_div(log_p, q, reduction='sum')  # 使用 PyTorch 自带的 KL 散度损失函数计算 KL 散度
+
+        return kl_loss.mean()
+        
 class ParsingRelationLoss(nn.Module):
     def __init__(self):
         super(ParsingRelationLoss, self).__init__()
