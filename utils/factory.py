@@ -1,4 +1,4 @@
-from utils.loss import SoftmaxFocalLoss, ParsingRelationLoss, ParsingRelationDis, MeanLoss, TokenSegLoss, VarLoss, EMDLoss, RegLoss
+from utils.loss import SoftmaxFocalLoss, ParsingRelationLoss, ParsingRelationDis,CustomKLDivLoss, MeanLoss, TokenSegLoss, VarLoss, EMDLoss, RegLoss
 from utils.metrics import MultiLabelAcc, AccTopk, Metric_mIoU, Mae
 from utils.dist_utils import DistSummaryWriter
 
