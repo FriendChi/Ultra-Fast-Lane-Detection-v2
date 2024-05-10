@@ -224,7 +224,8 @@ def inference_culane_tusimple(net,teacher_net, data_label):
     
     res_dict = {'cls_out': pred['loc_row'], 'cls_label': data_label['labels_row'], 'cls_out_col':pred['loc_col'],'cls_label_col':data_label['labels_col'],
             'cls_out_ext':pred['exist_row'], 'cls_out_ext_label':cls_out_ext_label, 'cls_out_col_ext':pred['exist_col'],
-                'cls_out_col_ext_label':cls_out_col_ext_label, 'labels_row_float':data_label['labels_row_float'], 'labels_col_float':data_label['labels_col_float'] }
+                'cls_out_col_ext_label':cls_out_col_ext_label, 'labels_row_float':data_label['labels_row_float'], 'labels_col_float':data_label['labels_col_float'], 
+                'cls_out_col_teacher': teacher_pred['loc_col'],'cls_out_teacher': teacher_pred['loc_row']}    
     if 'seg_out' in pred.keys():
         res_dict['seg_out'] = pred['seg_out']
         res_dict['seg_label'] = data_label['seg_images']
