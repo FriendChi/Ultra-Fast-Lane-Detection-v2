@@ -215,7 +215,7 @@ def inference(net,teacher_net, data_label, dataset):
     else:
         raise NotImplementedError
 
-def inference_culane_tusimple(net, data_label):
+def inference_culane_tusimple(net,teacher_net, data_label):
     pred = net(data_label['images'])
     teacher_pred = teacher_net(data_label['images'])
     
