@@ -91,6 +91,12 @@ if __name__ == "__main__":
                              num_lane_on_col = 4, use_aux = False, 
                              input_height = 320, input_width = 800, 
                              fc_norm = False).cuda()
+
+    #加载训练过的模型参数
+    #读取保存好的预训练模型状态字典，并将其存储在resume_dict变量中
+    resume_dict = torch.load('/kaggle/input/res34-tu/Ultra-Fast-Lane-Detection-v2/log/20240510_112515_lr_5e-02_b_32/model_best.pth', map_location='cpu')
+    #将恢复的状态字典中的模型参数加载到目标模型
+    teacher_net.load_state_dict(resume_dict['model']) 
     
     if distributed:
         net = torch.nn.parallel.DistributedDataParallel(net, device_ids = [args.local_rank])
