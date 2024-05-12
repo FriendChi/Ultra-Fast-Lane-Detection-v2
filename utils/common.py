@@ -258,7 +258,8 @@ def calc_loss(loss_dict, results, logger, global_step, epoch):
 
         loss_cur = loss_dict['op'][i](*datas)
         print(loss_dict['name'][i])
-        print(loss_cur)
+        print(data_src)
+        #print(loss_cur)
         if global_step % 20 == 0:
             logger.add_scalar('loss/'+loss_dict['name'][i], loss_cur, global_step)
 
