@@ -168,6 +168,7 @@ class resnet(torch.nn.Module):
             model = torchvision.models.resnet18(weights="IMAGENET1K_V1")
         elif layers == '34':
             model = torchvision.models.resnet34(weights="IMAGENET1K_V1")
+            print("IMAGENET1K_V1")
         elif layers == '50':
             model = torchvision.models.resnet50(weights="IMAGENET1K_V1")
         elif layers == '101':
