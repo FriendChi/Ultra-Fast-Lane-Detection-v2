@@ -97,6 +97,7 @@ if __name__ == "__main__":
     resume_dict = torch.load('/kaggle/input/res34-tu/Ultra-Fast-Lane-Detection-v2/log/20240510_112515_lr_5e-02_b_32/model_best.pth', map_location='cpu')
     #将恢复的状态字典中的模型参数加载到目标模型
     teacher_net.load_state_dict(resume_dict['model']) 
+    print('resnet34 loaded')
     
     if distributed:
         net = torch.nn.parallel.DistributedDataParallel(net, device_ids = [args.local_rank])
