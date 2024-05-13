@@ -91,73 +91,73 @@ class Transition_Block(nn.Module):
         
         return torch.cat([x_2, x_1], 1)
 
-class resnet1(nn.Module):
-    def __init__(self, layers,pretrained = False,transition_channels= {'l' : 32, 'x' : 40}['l'], block_channels=32, n= {'l' : 4, 'x' : 6}['l'], phi='l'):
-        super().__init__()
-        #-----------------------------------------------#
-        #   输入图片是640, 640, 3
-        #-----------------------------------------------#
-        ids = {
-            'l' : [-1, -3, -5, -6],
-            'x' : [-1, -3, -5, -7, -8], 
-        }[phi]
-        self.stem = nn.Sequential(
-            Conv(3, transition_channels, 3, 2),
-            Conv(transition_channels, transition_channels * 2, 3, 2),
-            Conv(transition_channels * 2, transition_channels * 2, 3, 2),
-        )
-        self.dark2 = nn.Sequential(
-            Conv(transition_channels * 2, transition_channels * 4, 3, 2),
-            Multi_Concat_Block(transition_channels * 4, block_channels * 2, transition_channels * 8, n=n, ids=ids),
-        )
-        self.dark3 = nn.Sequential(
-            Transition_Block(transition_channels * 8, transition_channels * 4),
-            Multi_Concat_Block(transition_channels * 8, block_channels * 4, transition_channels * 16, n=n, ids=ids),
-        )
-        # self.dark4 = nn.Sequential(
-        #     Transition_Block(transition_channels * 16, transition_channels * 8),
-        #     Multi_Concat_Block(transition_channels * 16, block_channels * 8, transition_channels * 32, n=n, ids=ids),
-        # )
-        # self.dark5 = nn.Sequential(
-        #     Transition_Block(transition_channels * 32, transition_channels * 16),
-        #     Multi_Concat_Block(transition_channels * 32, block_channels * 8, transition_channels * 32, n=n, ids=ids),
-        # )
+# class resnet1(nn.Module):
+#     def __init__(self, layers,pretrained = False,transition_channels= {'l' : 32, 'x' : 40}['l'], block_channels=32, n= {'l' : 4, 'x' : 6}['l'], phi='l'):
+#         super().__init__()
+#         #-----------------------------------------------#
+#         #   输入图片是640, 640, 3
+#         #-----------------------------------------------#
+#         ids = {
+#             'l' : [-1, -3, -5, -6],
+#             'x' : [-1, -3, -5, -7, -8], 
+#         }[phi]
+#         self.stem = nn.Sequential(
+#             Conv(3, transition_channels, 3, 2),
+#             Conv(transition_channels, transition_channels * 2, 3, 2),
+#             Conv(transition_channels * 2, transition_channels * 2, 3, 2),
+#         )
+#         self.dark2 = nn.Sequential(
+#             Conv(transition_channels * 2, transition_channels * 4, 3, 2),
+#             Multi_Concat_Block(transition_channels * 4, block_channels * 2, transition_channels * 8, n=n, ids=ids),
+#         )
+#         self.dark3 = nn.Sequential(
+#             Transition_Block(transition_channels * 8, transition_channels * 4),
+#             Multi_Concat_Block(transition_channels * 8, block_channels * 4, transition_channels * 16, n=n, ids=ids),
+#         )
+#         # self.dark4 = nn.Sequential(
+#         #     Transition_Block(transition_channels * 16, transition_channels * 8),
+#         #     Multi_Concat_Block(transition_channels * 16, block_channels * 8, transition_channels * 32, n=n, ids=ids),
+#         # )
+#         # self.dark5 = nn.Sequential(
+#         #     Transition_Block(transition_channels * 32, transition_channels * 16),
+#         #     Multi_Concat_Block(transition_channels * 32, block_channels * 8, transition_channels * 32, n=n, ids=ids),
+#         # )
         
-        if pretrained:
-            url = {
-                "l" : 'https://github.com/bubbliiiing/yolov7-pytorch/releases/download/v1.0/yolov7_backbone_weights.pth',
-                "x" : 'https://github.com/bubbliiiing/yolov7-pytorch/releases/download/v1.0/yolov7_x_backbone_weights.pth',
-            }[phi]
-            checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", model_dir="./")
-            # self.load_state_dict(checkpoint, strict=False)
-            # print("Load weights from " + url.split('/')[-1])
-            #pretrained_dict = torch.load('./model_data/yolov7_backbone_weights.pth')
-            # 获取当前模型的参数字典
-            model_dict = self.state_dict()
-            selected_dict = {k: v for k, v in checkpoint.items() if k in model_dict}
-            model_dict.update(selected_dict)
-            #checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", model_dir="./model_data")
-            self.load_state_dict(model_dict, strict=False)
-            print("Load weights from " + url.split('/')[-1])
-    def forward(self, x):
-        x = self.stem(x)
-        x = self.dark2(x)
-        #-----------------------------------------------#
-        #   dark3的输出为80, 80, 512，是一个有效特征层
-        #-----------------------------------------------#
-        x = self.dark3(x)
-        feat1 = x
-        #-----------------------------------------------#
-        #   dark4的输出为40, 40, 1024，是一个有效特征层
-        #-----------------------------------------------#
-        #x = self.dark4(x)
-        #feat2 = x
-        #-----------------------------------------------#
-        #   dark5的输出为20, 20, 1024，是一个有效特征层
-        #-----------------------------------------------#
-        #x = self.dark5(x)
-        #feat3 = x
-        return None,None,feat1  #, feat2, feat3
+#         if pretrained:
+#             url = {
+#                 "l" : 'https://github.com/bubbliiiing/yolov7-pytorch/releases/download/v1.0/yolov7_backbone_weights.pth',
+#                 "x" : 'https://github.com/bubbliiiing/yolov7-pytorch/releases/download/v1.0/yolov7_x_backbone_weights.pth',
+#             }[phi]
+#             checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", model_dir="./")
+#             # self.load_state_dict(checkpoint, strict=False)
+#             # print("Load weights from " + url.split('/')[-1])
+#             #pretrained_dict = torch.load('./model_data/yolov7_backbone_weights.pth')
+#             # 获取当前模型的参数字典
+#             model_dict = self.state_dict()
+#             selected_dict = {k: v for k, v in checkpoint.items() if k in model_dict}
+#             model_dict.update(selected_dict)
+#             #checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", model_dir="./model_data")
+#             self.load_state_dict(model_dict, strict=False)
+#             print("Load weights from " + url.split('/')[-1])
+#     def forward(self, x):
+#         x = self.stem(x)
+#         x = self.dark2(x)
+#         #-----------------------------------------------#
+#         #   dark3的输出为80, 80, 512，是一个有效特征层
+#         #-----------------------------------------------#
+#         x = self.dark3(x)
+#         feat1 = x
+#         #-----------------------------------------------#
+#         #   dark4的输出为40, 40, 1024，是一个有效特征层
+#         #-----------------------------------------------#
+#         #x = self.dark4(x)
+#         #feat2 = x
+#         #-----------------------------------------------#
+#         #   dark5的输出为20, 20, 1024，是一个有效特征层
+#         #-----------------------------------------------#
+#         #x = self.dark5(x)
+#         #feat3 = x
+#         return None,None,feat1  #, feat2, feat3
 
 
 
@@ -168,7 +168,6 @@ class resnet(torch.nn.Module):
             model = torchvision.models.resnet18(weights="IMAGENET1K_V1")
         elif layers == '34':
             model = torchvision.models.resnet34(weights="IMAGENET1K_V1")
-            print("IMAGENET1K_V1")
         elif layers == '50':
             model = torchvision.models.resnet50(weights="IMAGENET1K_V1")
         elif layers == '101':
