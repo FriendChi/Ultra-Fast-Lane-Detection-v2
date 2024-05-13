@@ -141,7 +141,7 @@ class parsingNet(torch.nn.Module):
         mlp_mid_dim = 2048
         self.input_dim = input_height // 32 * input_width // 32 * 8
 
-        self.model = resnet1(backbone, pretrained=pretrained)
+        self.model = resnet(backbone, pretrained=pretrained)
 
         # for avg pool experiment
         # self.pool = torch.nn.AdaptiveAvgPool2d(1)
