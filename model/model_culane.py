@@ -1,5 +1,5 @@
 import torch
-from model.backbone import resnet,resnet1
+from model.backbone import resnet
 import numpy as np
 from utils.common import initialize_weights
 from model.seg_model import SegHead
