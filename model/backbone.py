@@ -138,6 +138,42 @@ class DeformConv2D(nn.Module):
 
         return x_offset
 
+class DeformableResidualBlock(nn.Module):  
+  
+    def __init__(self, in_channels=512, out_channels=512, stride=1):  
+        super(DeformableResidualBlock, self).__init__()  
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False)  
+        self.bn1 = nn.BatchNorm2d(out_channels)  
+        self.relu = nn.ReLU(inplace=True)  
+          
+        # 偏移量卷积层  
+        self.offsets = nn.Conv2d(out_channels, 18, kernel_size=3, stride=stride, padding=1)  
+          
+        # 可变形卷积层  
+        self.conv2 = DeformConv2D(out_channels, out_channels, kernel_size=3, padding=1)  
+        self.bn2 = nn.BatchNorm2d(out_channels)  
+          
+        self.stride = stride  
+  
+    def forward(self, x):  
+        residual = x  
+  
+        out = self.conv1(x)  
+        out = self.bn1(out)  
+        out = self.relu(out)  
+          
+        # 计算偏移量  
+        offsets = self.offsets(out)  
+          
+        # 应用可变形卷积  
+        out = self.conv2(out, offsets)  
+        out = self.bn2(out)  
+  
+  
+        out += residual  
+  
+        return out
+
 class resnet(torch.nn.Module):
     def __init__(self,layers,pretrained = False):
         super(resnet,self).__init__()
@@ -172,15 +208,11 @@ class resnet(torch.nn.Module):
         self.layer2 = model.layer2
         self.layer3 = model.layer3
         
-        block2 = model.layer4[1]
-        # 创建你自制的卷积层实例，确保参数与原始conv2匹配  
-        my_conv2 = DeformConv2D(512, 512, kernel_size=3)  
-        # 替换原始的conv2层  
-        block2.conv2 = my_conv2  
+        self.block1 = model.layer4[0]
+        self.block2 = DeformableResidualBlock()  
 
-        self.layer4 = model.layer4
-        print("检查结构：")
-        print(model.layer4[1])
+        # print("检查结构：")
+        # print()
     def forward(self,x):
         x = self.conv1(x)
         x = self.bn1(x)
@@ -189,5 +221,7 @@ class resnet(torch.nn.Module):
         x = self.layer1(x)
         x2 = self.layer2(x)
         x3 = self.layer3(x2)
-        x4 = self.layer4(x3)
-        return x2,x3,x4
+        x4 = self.block1(x3)
+        x5 = self.block2(x4)
+        #前两个输出是给分割的
+        return x2,x3,x5
