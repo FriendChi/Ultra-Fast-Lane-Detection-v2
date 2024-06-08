@@ -975,7 +975,7 @@ def call_culane_eval(data_dir, exp_name,output_path):
     im_w=1640
     im_h=590
     frame=1
-    list0 = os.path.join(data_dir,'/test0_normal.txt')
+    list0 = os.path.join(data_dir,'list/list/test_split/test0_normal.txt')
     list1 = os.path.join(data_dir,'list/list/test_split/test1_crowd.txt')
     list2 = os.path.join(data_dir,'list/list/test_split/test2_hlight.txt')
     list3 = os.path.join(data_dir,'list/list/test_split/test3_shadow.txt')
