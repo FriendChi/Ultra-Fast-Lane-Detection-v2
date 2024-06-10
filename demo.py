@@ -91,7 +91,7 @@ if __name__ == "__main__":
     ])
     if cfg.dataset == 'CULane':
         splits = ['test0_normal.txt', 'test1_crowd.txt', 'test2_hlight.txt', 'test3_shadow.txt', 'test4_noline.txt', 'test5_arrow.txt', 'test6_curve.txt', 'test7_cross.txt', 'test8_night.txt']
-        datasets = [LaneTestDataset(cfg.data_root,os.path.join(cfg.data_root, 'list/list/test_split/'+split),img_transform = img_transforms, crop_size = cfg.train_height) for split in splits]
+        datasets = [LaneTestDataset(cfg.data_root,os.path.join("/kaggle/working/temp", 'list/list/test_split/'+split),img_transform = img_transforms, crop_size = cfg.train_height) for split in splits]
         img_w, img_h = 1640, 590
     elif cfg.dataset == 'Tusimple':
         splits = ['test.txt']

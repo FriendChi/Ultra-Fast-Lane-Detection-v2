@@ -975,15 +975,15 @@ def call_culane_eval(data_dir, exp_name,output_path):
     im_w=1640
     im_h=590
     frame=1
-    list0 = os.path.join(data_dir,'list/list/test_split/test0_normal.txt')
-    list1 = os.path.join(data_dir,'list/list/test_split/test1_crowd.txt')
-    list2 = os.path.join(data_dir,'list/list/test_split/test2_hlight.txt')
-    list3 = os.path.join(data_dir,'list/list/test_split/test3_shadow.txt')
-    list4 = os.path.join(data_dir,'list/list/test_split/test4_noline.txt')
-    list5 = os.path.join(data_dir,'list/list/test_split/test5_arrow.txt')
-    list6 = os.path.join(data_dir,'list/list/test_split/test6_curve.txt')
-    list7 = os.path.join(data_dir,'list/list/test_split/test7_cross.txt')
-    list8 = os.path.join(data_dir,'list/list/test_split/test8_night.txt')
+    list0 = os.path.join("/kaggle/working/temp",'list/list/test_split/test0_normal.txt')
+    list1 = os.path.join("/kaggle/working/temp",'list/list/test_split/test1_crowd.txt')
+    list2 = os.path.join("/kaggle/working/temp",'list/list/test_split/test2_hlight.txt')
+    list3 = os.path.join("/kaggle/working/temp",'list/list/test_split/test3_shadow.txt')
+    list4 = os.path.join("/kaggle/working/temp",'list/list/test_split/test4_noline.txt')
+    list5 = os.path.join("/kaggle/working/temp",'list/list/test_split/test5_arrow.txt')
+    list6 = os.path.join("/kaggle/working/temp",'list/list/test_split/test6_curve.txt')
+    list7 = os.path.join("/kaggle/working/temp",'list/list/test_split/test7_cross.txt')
+    list8 = os.path.join("/kaggle/working/temp",'list/list/test_split/test8_night.txt')
     if not os.path.exists(os.path.join(output_path,'txt')):
         os.mkdir(os.path.join(output_path,'txt'))
     out0 = os.path.join(output_path,'txt','out0_normal.txt')
