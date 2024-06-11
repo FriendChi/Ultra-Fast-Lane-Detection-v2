@@ -42,6 +42,7 @@ def get_args():
     parser.add_argument('--log_path', default = None, type = str)
     parser.add_argument('--finetune', default = None, type = str)
     parser.add_argument('--resume', default = None, type = str)
+    parser.add_argument('--resume_epoch', default = None, type = int)
     parser.add_argument('--test_model', default = None, type = str)
     parser.add_argument('--test_work_dir', default = None, type = str)
     parser.add_argument('--num_lanes', default = None, type = int)
@@ -78,7 +79,7 @@ def merge_config():
     items = ['dataset','data_root','epoch','batch_size','optimizer','learning_rate',
     'weight_decay','momentum','scheduler','steps','gamma','warmup','warmup_iters',
     'use_aux','griding_num','backbone','sim_loss_w','shp_loss_w','note','log_path',
-    'finetune','resume', 'test_model','test_work_dir', 'num_lanes', 'var_loss_power', 'num_row', 'num_col', 'train_width', 'train_height',
+    'finetune','resume','resume_epoch', 'test_model','test_work_dir', 'num_lanes', 'var_loss_power', 'num_row', 'num_col', 'train_width', 'train_height',
     'num_cell_row', 'num_cell_col', 'mean_loss_w','fc_norm','soft_loss','cls_loss_col_w', 'cls_ext_col_w', 'mean_loss_col_w', 'eval_mode', 'eval_during_training', 'split_channel', 'match_method', 'selected_lane', 'cumsum', 'masked']
     for item in items:
         if getattr(args, item) is not None:
