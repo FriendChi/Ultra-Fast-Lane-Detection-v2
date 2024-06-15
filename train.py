@@ -122,7 +122,7 @@ if __name__ == "__main__":
 
         if res is not None and res > max_res:
             max_res = res
-            save_bestmodel(net, optimizer, epoch, work_dir, distributed)
+            #save_bestmodel(net, optimizer, epoch, work_dir, distributed)
         save_model(net, optimizer, epoch, work_dir, distributed)
         logger.add_scalar('CuEval/X',max_res,global_step = epoch)
 
