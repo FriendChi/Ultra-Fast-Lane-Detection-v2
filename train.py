@@ -6,7 +6,7 @@ from utils.factory import get_metric_dict, get_loss_dict, get_optimizer, get_sch
 from utils.metrics import update_metrics, reset_metrics
 
 from utils.common import calc_loss, get_model, get_train_loader, inference, merge_config, save_model, cp_projects
-from utils.common import get_work_dir, get_logger
+from utils.common import get_work_dir, get_logger,save_bestmodel
 
 import time
 from evaluation.eval_wrapper import eval_lane
@@ -122,7 +122,8 @@ if __name__ == "__main__":
 
         if res is not None and res > max_res:
             max_res = res
-            save_model(net, optimizer, epoch, work_dir, distributed)
+            save_bestmodel(net, optimizer, epoch, work_dir, distributed)
+        save_model(net, optimizer, epoch, work_dir, distributed)
         logger.add_scalar('CuEval/X',max_res,global_step = epoch)
 
     logger.close()
