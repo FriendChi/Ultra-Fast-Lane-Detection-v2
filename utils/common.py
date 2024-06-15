@@ -99,13 +99,35 @@ def merge_config():
     return args, cfg
 
 
-def save_model(net, optimizer, epoch,save_path, distributed):
+def save_bestmodel(net, optimizer, epoch,save_path, distributed):
     if is_main_process():
         model_state_dict = net.state_dict()
         state = {'model': model_state_dict, 'optimizer': optimizer.state_dict()}
         # state = {'model': model_state_dict}
         assert os.path.exists(save_path)
         model_path = os.path.join(save_path, 'model_best.pth')
+        torch.save(state, model_path)
+
+def save_model(net, optimizer, epoch,save_path, distributed):
+    if is_main_process():
+        model_state_dict = net.state_dict()
+        #调优化器和模型的参数
+        state = {'model': model_state_dict, 'optimizer': optimizer.state_dict()}
+        # state = {'model': model_state_dict}
+
+        assert os.path.exists(save_path)
+
+        # 获取指定目录下的所有文件
+        files = os.listdir(save_path)
+        for file in files:
+            # 判断文件是否为.pth文件，并且不是当前要保存的检查点文件
+            if file.endswith('.pth'):
+                file_path = os.path.join(save_path, file)
+                # 删除文件
+                os.remove(file_path)
+
+        model_path = os.path.join(save_path, f'model_{epoch:03d}.pth')
+        #model_path = os.path.join(save_path, 'model_best.pth')
         torch.save(state, model_path)
 
 import pathspec
