@@ -207,12 +207,8 @@ class resnet(torch.nn.Module):
         self.layer1 = model.layer1
         self.layer2 = model.layer2
         self.layer3 = model.layer3
-        
-        self.block1 = model.layer4[0]
-        self.block2 = DeformableResidualBlock()  
+        self.layer4 = model.layer4
 
-        # print("检查结构：")
-        # print()
     def forward(self,x):
         x = self.conv1(x)
         x = self.bn1(x)
@@ -221,7 +217,5 @@ class resnet(torch.nn.Module):
         x = self.layer1(x)
         x2 = self.layer2(x)
         x3 = self.layer3(x2)
-        x4 = self.block1(x3)
-        x5 = self.block2(x4)
-        #前两个输出是给分割的
-        return x2,x3,x5
+        x4 = self.layer4(x3)
+        return x2,x3,x4
