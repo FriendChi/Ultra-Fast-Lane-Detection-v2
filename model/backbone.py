@@ -152,7 +152,7 @@ class resnet(nn.Module):
         #通道*2，长宽/2
         self.dark5 = nn.Sequential(
             Transition_Block(transition_channels * 16, transition_channels * 8),
-            Multi_Concat_Block(transition_channels * 16, block_channels * 8, transition_channels * 32, n=n, ids=ids),
+            Multi_Concat_Block(transition_channels * 16, block_channels * 8, transition_channels * 16, n=n, ids=ids),
         )
         
         # if pretrained:
