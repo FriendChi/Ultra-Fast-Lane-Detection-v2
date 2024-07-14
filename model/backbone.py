@@ -14,6 +14,6 @@ class resnet(torch.nn.Module):
 
     def forward(self,x):
         x = self.model(x)
-        x = self.conv(x)
+        x = self.conv(x['stage_final'])
         
         return None,None,x
