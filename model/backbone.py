@@ -124,9 +124,9 @@ class resnet(nn.Module):
             'x' : [-1, -3, -5, -7, -8], 
         }[phi]
         #通道3->transition_channels,长宽/2
-        self.conv1 = Conv(3, transition_channels, 3, 2)
+        self.conv1 = Conv(3, transition_channels//2, 3, 2)
         #通道*2，长宽/2
-        self.conv2 = Conv(transition_channels, transition_channels * 2, 3, 2)
+        self.conv2 = Conv(transition_channels//2, transition_channels, 3, 1)
         #长宽/2
         self.conv3 = Conv(transition_channels * 2, transition_channels * 2, 3, 2)
         # self.stem = nn.Sequential(
@@ -174,7 +174,7 @@ class resnet(nn.Module):
     def forward(self, x):
         x = self.conv1(x)
         #print(x.shape)
-        # x = self.conv2(x)
+        x = self.conv2(x)
         # print(x.shape)
         # x = self.conv3(x)
         # print(x.shape)
