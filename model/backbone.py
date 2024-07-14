@@ -9,20 +9,24 @@ import torch
 import torch.nn as nn
 
 
-def autopad(k, p=None):
-    if p is None:
-        p = k // 2 if isinstance(k, int) else [x // 2 for x in k] 
-    return p
+
 
 class SiLU(nn.Module):  
     @staticmethod
     def forward(x):
         return x * torch.sigmoid(x)
     
+def autopad(k, p=None):
+    if p is None:
+        #这样p一定等于k // 2
+        p = k // 2 if isinstance(k, int) else [x // 2 for x in k] 
+    return p
+
 class Conv(nn.Module):
     def __init__(self, c1, c2, k=1, s=1, p=None, g=1, act=SiLU()):  # ch_in, ch_out, kernel, stride, padding, groups
         super(Conv, self).__init__()
         self.conv   = nn.Conv2d(c1, c2, k, s, autopad(k, p), groups=g, bias=False)
+        #print(autopad(k, p))
         self.bn     = nn.BatchNorm2d(c2, eps=0.001, momentum=0.03)
         self.act    = nn.LeakyReLU(0.1, inplace=True) if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
 
@@ -76,15 +80,41 @@ class Transition_Block(nn.Module):
 
     def forward(self, x):
         x_1 = self.mp(x)
+        #print('x_1:',x_1.shape)
         x_1 = self.cv1(x_1)
-        
+        #print('x_1:',x_1.shape)
+
         x_2 = self.cv2(x)
+        #print('x_2:',x_2.shape)
         x_2 = self.cv3(x_2)
+        #print('x_2:',x_2.shape)
+        
+        return torch.cat([x_2, x_1], 1)
+    
+class _Transition_Block(nn.Module):
+    def __init__(self, c1, c2):
+        super(_Transition_Block, self).__init__()
+        self.cv1 = Conv(c1, c2, 1, 1)
+        self.cv2 = Conv(c1, c2, 1, 1)
+        #self.cv3 = Conv(c2, c2, 3, 2)
+        
+        self.mp  = MP()
+
+    def forward(self, x):
+        x_1 = self.mp(x)
+        #print('x_1:',x_1.shape)
+        x_1 = self.cv1(x_1)
+        #print('x_1:',x_1.shape)
+
+        x_2 = self.cv2(x)
+        #print('x_2:',x_2.shape)
+        x_2 = self.mp(x_2)
+        #print('x_2:',x_2.shape)
         
         return torch.cat([x_2, x_1], 1)
 
 class resnet(nn.Module):
-    def __init__(self, layers,pretrained = False,transition_channels= 16, block_channels=16, n= {'l' : 4, 'x' : 6}['l'], phi='l'):
+    def __init__(self, layers,pretrained = False,transition_channels= 32, block_channels=16, n= {'l' : 4, 'x' : 6}['l'], phi='l'):
         super().__init__()
         #-----------------------------------------------#
         #   输入图片是640, 640, 3
@@ -93,26 +123,36 @@ class resnet(nn.Module):
             'l' : [-1, -3, -5, -6],
             'x' : [-1, -3, -5, -7, -8], 
         }[phi]
-        self.stem = nn.Sequential(
-            Conv(3, transition_channels, 3, 2),
-            Conv(transition_channels, transition_channels * 2, 3, 2),
-            Conv(transition_channels * 2, transition_channels * 2, 3, 2),
-        )
+        #通道3->transition_channels,长宽/2
+        self.conv1 = Conv(3, transition_channels, 3, 2)
+        #通道*2，长宽/2
+        self.conv2 = Conv(transition_channels, transition_channels * 2, 3, 2)
+        #长宽/2
+        self.conv3 = Conv(transition_channels * 2, transition_channels * 2, 3, 2)
+        # self.stem = nn.Sequential(
+        #     Conv(3, transition_channels, 3, 2),
+        #     Conv(transition_channels, transition_channels * 2, 3, 2),
+        #     Conv(transition_channels * 2, transition_channels * 2, 3, 2),
+        # )
+        #通道*4，长宽/2
         self.dark2 = nn.Sequential(
-            Conv(transition_channels * 2, transition_channels * 4, 3, 2),
+            Conv(transition_channels , transition_channels  *2, 3, 2),
+            Multi_Concat_Block(transition_channels * 2, block_channels * 2, transition_channels * 4, n=n, ids=ids),
+        )
+        #通道*2，长宽/2
+        self.dark3 = nn.Sequential(
+            Transition_Block(transition_channels * 4, transition_channels * 2),
             Multi_Concat_Block(transition_channels * 4, block_channels * 2, transition_channels * 8, n=n, ids=ids),
         )
-        self.dark3 = nn.Sequential(
+        #通道*2，长宽/2
+        self.dark4 = nn.Sequential(
             Transition_Block(transition_channels * 8, transition_channels * 4),
             Multi_Concat_Block(transition_channels * 8, block_channels * 4, transition_channels * 16, n=n, ids=ids),
         )
-        self.dark4 = nn.Sequential(
+        #通道*2，长宽/2
+        self.dark5 = nn.Sequential(
             Transition_Block(transition_channels * 16, transition_channels * 8),
             Multi_Concat_Block(transition_channels * 16, block_channels * 8, transition_channels * 32, n=n, ids=ids),
-        )
-        self.dark5 = nn.Sequential(
-            Transition_Block(transition_channels * 32, transition_channels * 16),
-            Multi_Concat_Block(transition_channels * 32, block_channels * 8, transition_channels * 32, n=n, ids=ids),
         )
         
         # if pretrained:
@@ -132,21 +172,31 @@ class resnet(nn.Module):
         #     self.load_state_dict(model_dict, strict=False)
         #     print("Load weights from " + url.split('/')[-1])
     def forward(self, x):
-        x = self.stem(x)
+        x = self.conv1(x)
+        #print(x.shape)
+        # x = self.conv2(x)
+        # print(x.shape)
+        # x = self.conv3(x)
+        # print(x.shape)
         x = self.dark2(x)
+        #feat1 = x
+        #print(x.shape)
         #-----------------------------------------------#
         #   dark3的输出为80, 80, 512，是一个有效特征层
         #-----------------------------------------------#
         x = self.dark3(x)
         #feat1 = x
+        #print(3,x.shape)
         #-----------------------------------------------#
         #   dark4的输出为40, 40, 1024，是一个有效特征层
         #-----------------------------------------------#
         x = self.dark4(x)
         #feat2 = x
+        #print(4,x.shape)
         #-----------------------------------------------#
         #   dark5的输出为20, 20, 1024，是一个有效特征层
         #-----------------------------------------------#
         x = self.dark5(x)
+        #print(5,x.shape)
         feat3 = x
         return None,None,feat3  #, feat2, feat3
