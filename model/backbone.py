@@ -115,22 +115,22 @@ class resnet(nn.Module):
             Multi_Concat_Block(transition_channels * 32, block_channels * 8, transition_channels * 32, n=n, ids=ids),
         )
         
-        if pretrained:
-            url = {
-                "l" : 'https://github.com/bubbliiiing/yolov7-pytorch/releases/download/v1.0/yolov7_backbone_weights.pth',
-                "x" : 'https://github.com/bubbliiiing/yolov7-pytorch/releases/download/v1.0/yolov7_x_backbone_weights.pth',
-            }[phi]
-            # checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", model_dir="./model_data")
-            # self.load_state_dict(checkpoint, strict=False)
-            # print("Load weights from " + url.split('/')[-1])
-            pretrained_dict = torch.load('/kaggle/input/yolov7-backbone-weights/yolov7_backbone_weights.pth')
-            # 获取当前模型的参数字典
-            model_dict = self.state_dict()
-            selected_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
-            model_dict.update(selected_dict)
-            #checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", model_dir="./model_data")
-            self.load_state_dict(model_dict, strict=False)
-            print("Load weights from " + url.split('/')[-1])
+        # if pretrained:
+        #     url = {
+        #         "l" : 'https://github.com/bubbliiiing/yolov7-pytorch/releases/download/v1.0/yolov7_backbone_weights.pth',
+        #         "x" : 'https://github.com/bubbliiiing/yolov7-pytorch/releases/download/v1.0/yolov7_x_backbone_weights.pth',
+        #     }[phi]
+        #     # checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", model_dir="./model_data")
+        #     # self.load_state_dict(checkpoint, strict=False)
+        #     # print("Load weights from " + url.split('/')[-1])
+        #     pretrained_dict = torch.load('/kaggle/input/yolov7-backbone-weights/yolov7_backbone_weights.pth')
+        #     # 获取当前模型的参数字典
+        #     model_dict = self.state_dict()
+        #     selected_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+        #     model_dict.update(selected_dict)
+        #     #checkpoint = torch.hub.load_state_dict_from_url(url=url, map_location="cpu", model_dir="./model_data")
+        #     self.load_state_dict(model_dict, strict=False)
+        #     print("Load weights from " + url.split('/')[-1])
     def forward(self, x):
         x = self.stem(x)
         x = self.dark2(x)
