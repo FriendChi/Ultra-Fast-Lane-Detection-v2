@@ -4,6 +4,13 @@
 
 import torch
 import torch.nn as nn
+import os
+import sys
+
+# 添加最高层 efficientvit 目录到 Python 路径
+efficientvit_root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+if efficientvit_root_path not in sys.path:
+    sys.path.append(efficientvit_root_path)
 
 from efficientvit.models.nn import (
     ConvLayer,
