@@ -128,7 +128,7 @@ class resnet(nn.Module):
         #通道*2，长宽/2
         self.conv2 = Conv(transition_channels//4, transition_channels//2, 3, 1)
         #长宽/2
-        self.conv3 = Conv(transition_channels//2, transition_channels, 3, 2)
+        self.conv3 = Conv(transition_channels//2, transition_channels, 3, 1)
         # self.stem = nn.Sequential(
         #     Conv(3, transition_channels, 3, 2),
         #     Conv(transition_channels, transition_channels * 2, 3, 2),
@@ -175,9 +175,9 @@ class resnet(nn.Module):
         x = self.conv1(x)
         #print(x.shape)
         x = self.conv2(x)
-        # print(x.shape)
+        #print(x.shape)
         x = self.conv3(x)
-        # print(x.shape)
+        #print(x.shape)
         x = self.dark2(x)
         #feat1 = x
         #print(x.shape)
@@ -186,7 +186,7 @@ class resnet(nn.Module):
         #-----------------------------------------------#
         x = self.dark3(x)
         #feat1 = x
-        #print(3,x.shape)
+        ##print(3,x.shape)
         #-----------------------------------------------#
         #   dark4的输出为40, 40, 1024，是一个有效特征层
         #-----------------------------------------------#
