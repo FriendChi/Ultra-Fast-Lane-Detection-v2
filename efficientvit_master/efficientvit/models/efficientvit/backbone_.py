@@ -5,7 +5,7 @@
 import torch
 import torch.nn as nn
 
-from ..nn import (
+from efficientvit.models.nn import (
     ConvLayer,
     DSConv,
     EfficientViTBlock,
@@ -16,7 +16,7 @@ from ..nn import (
     ResBlock,
     ResidualBlock,
 )
-from ..utils import build_kwargs_from_config
+from efficientvit.models.utils import build_kwargs_from_config
 
 __all__ = [
     "EfficientViTBackbone",
