@@ -13,7 +13,7 @@ if efficientvit_path not in sys.path:
     sys.path.append(efficientvit_path)
 
 # 导入函数
-from backbone import efficientvit_backbone_b0
+from backbone_ import efficientvit_backbone_b0
 
 class resnet(torch.nn.Module):
     def __init__(self,layers,pretrained = False):
