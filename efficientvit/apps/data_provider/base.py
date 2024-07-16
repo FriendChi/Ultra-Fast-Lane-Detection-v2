@@ -9,7 +9,7 @@ import torch.utils.data
 from torch.utils.data.distributed import DistributedSampler
 
 from efficientvit.apps.data_provider.random_resolution import RRSController
-from ..utils import val2tuple
+
 
 __all__ = ["parse_image_size", "random_drop_data", "DataProvider"]
 
@@ -148,6 +148,7 @@ class DataProvider:
             self.train.sampler.set_epoch(epoch)
 
     def assign_active_image_size(self, new_size: int or tuple[int, int]) -> None:
+        from ..utils import val2tuple
         self.active_image_size = val2tuple(new_size, 2)
         new_transform = self.build_valid_transform(self.active_image_size)
         # change the transform of the valid and test set
