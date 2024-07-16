@@ -8,7 +8,7 @@ import torch
 import torchvision.transforms as transforms
 import torchvision.transforms.functional as F
 
-from ...utils import torch_random_choices
+
 
 __all__ = [
     "RRSController",
@@ -33,6 +33,7 @@ class RRSController:
 
     @staticmethod
     def set_epoch(epoch: int, batch_per_epoch: int) -> None:
+        from ...utils import torch_random_choices
         g = torch.Generator()
         g.manual_seed(epoch)
         RRSController.CHOICE_LIST = torch_random_choices(
@@ -43,6 +44,7 @@ class RRSController:
 
 
 def get_interpolate(name: str) -> F.InterpolationMode:
+    from ...utils import torch_random_choices
     mapping = {
         "nearest": F.InterpolationMode.NEAREST,
         "bilinear": F.InterpolationMode.BILINEAR,
