@@ -46,7 +46,7 @@ def init_modules(model: nn.Module or list[nn.Module], init_type="trunc_normal") 
 
 
 def zero_last_gamma(model: nn.Module, init_val=0) -> None:
-    import efficientvit.models.nn.ops as ops
+    from ...nn import ops as ops
 
     for m in model.modules():
         if isinstance(m, ops.ResidualBlock) and isinstance(m.shortcut, ops.IdentityLayer):

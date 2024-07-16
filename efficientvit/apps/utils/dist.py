@@ -7,7 +7,7 @@ import os
 import torch
 import torch.distributed
 
-from efficientvit.models.utils.list import list_mean, list_sum
+from ...utils.list import list_mean, list_sum
 
 __all__ = [
     "dist_init",
