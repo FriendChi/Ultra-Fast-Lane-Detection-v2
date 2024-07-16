@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 
 from efficientvit.apps.trainer.run_config import Scheduler
-from ops import IdentityLayer, ResidualBlock
+from .ops import IdentityLayer, ResidualBlock
 from ..utils import build_kwargs_from_config
 
 __all__ = ["apply_drop_func"]
