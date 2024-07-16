@@ -24,14 +24,13 @@ from efficientvit.apps.utils import (
     partial_update_config,
     zero_last_gamma,
 )
-from efficientvit.models.utils import build_kwargs_from_config, load_state_dict_from_file
+from ..utils import load_state_dict_from_file
 
 __all__ = [
     "save_exp_config",
     "setup_dist_env",
     "setup_seed",
     "setup_exp_config",
-    "setup_data_provider",
     "setup_run_config",
     "init_model",
 ]
@@ -84,23 +83,6 @@ def setup_exp_config(config_path: str, recursive=True, opt_args: dict or None = 
         partial_update_config(exp_config, opt_args)
 
     return exp_config
-
-
-def setup_data_provider(
-    exp_config: dict, data_provider_classes: list[type[DataProvider]], is_distributed: bool = True
-) -> DataProvider:
-    dp_config = exp_config["data_provider"]
-    dp_config["num_replicas"] = get_dist_size() if is_distributed else None
-    dp_config["rank"] = get_dist_rank() if is_distributed else None
-    dp_config["test_batch_size"] = dp_config.get("test_batch_size", None) or dp_config["base_batch_size"] * 2
-    dp_config["batch_size"] = dp_config["train_batch_size"] = dp_config["base_batch_size"]
-
-    data_provider_lookup = {provider.name: provider for provider in data_provider_classes}
-    data_provider_class = data_provider_lookup[dp_config["dataset"]]
-
-    data_provider_kwargs = build_kwargs_from_config(dp_config, data_provider_class)
-    data_provider = data_provider_class(**data_provider_kwargs)
-    return data_provider
 
 
 def setup_run_config(exp_config: dict, run_config_cls: type[RunConfig]) -> RunConfig:
