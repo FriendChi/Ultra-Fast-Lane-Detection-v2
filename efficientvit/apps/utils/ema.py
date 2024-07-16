@@ -8,7 +8,7 @@ import math
 import torch
 import torch.nn as nn
 
-from ..utils import is_parallel
+
 
 __all__ = ["EMA"]
 
@@ -21,6 +21,7 @@ def update_ema(ema: nn.Module, new_state_dict: dict[str, torch.Tensor], decay: f
 
 class EMA:
     def __init__(self, model: nn.Module, decay: float, warmup_steps=2000):
+        from ..utils import is_parallel
         self.shadows = copy.deepcopy(model.module if is_parallel(model) else model).eval()
         self.decay = decay
         self.warmup_steps = warmup_steps
@@ -29,6 +30,7 @@ class EMA:
             p.requires_grad = False
 
     def step(self, model: nn.Module, global_step: int) -> None:
+        from ..utils import is_parallel
         with torch.no_grad():
             msd = (model.module if is_parallel(model) else model).state_dict()
             update_ema(self.shadows, msd, self.decay * (1 - math.exp(-global_step / self.warmup_steps)))
