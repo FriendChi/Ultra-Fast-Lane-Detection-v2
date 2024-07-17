@@ -127,8 +127,9 @@ class resnet(nn.Module):
         self.conv1 = Conv(3, transition_channels//2, 3, 2)
         #通道*2，长宽/2
         self.conv2 = Conv(transition_channels//2, transition_channels, 3, 1)
+        self.conv4 = Conv(transition_channels * 16, transition_channels * 16, 3, 2)
         #长宽/2
-        self.conv3 = Conv(transition_channels * 2, transition_channels * 2, 3, 2)
+        #self.conv3 = Conv(transition_channels * 2, transition_channels * 2, 3, 2)
         # self.stem = nn.Sequential(
         #     Conv(3, transition_channels, 3, 2),
         #     Conv(transition_channels, transition_channels * 2, 3, 2),
@@ -173,30 +174,33 @@ class resnet(nn.Module):
         #     print("Load weights from " + url.split('/')[-1])
     def forward(self, x):
         x = self.conv1(x)
-        #print(x.shape)
+        print(x.shape)
         x = self.conv2(x)
-        # print(x.shape)
+        print(x.shape)
         # x = self.conv3(x)
         # print(x.shape)
         x = self.dark2(x)
         #feat1 = x
-        #print(x.shape)
+        print(x.shape)
         #-----------------------------------------------#
         #   dark3的输出为80, 80, 512，是一个有效特征层
         #-----------------------------------------------#
         x = self.dark3(x)
         #feat1 = x
-        #print(3,x.shape)
+        print(3,x.shape)
+        
         #-----------------------------------------------#
         #   dark4的输出为40, 40, 1024，是一个有效特征层
         #-----------------------------------------------#
         x = self.dark4(x)
+        x_conv4 = self.conv4(x)
         #feat2 = x
-        #print(4,x.shape)
+        print(4,x.shape)
         #-----------------------------------------------#
         #   dark5的输出为20, 20, 1024，是一个有效特征层
         #-----------------------------------------------#
         x = self.dark5(x)
-        #print(5,x.shape)
-        feat3 = x
+        feat3 = torch.cat((x, x_conv4), dim=1)
+        #torch.add(x1, x2)
+        print(5,feat3.shape)
         return None,None,feat3  #, feat2, feat3
