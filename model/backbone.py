@@ -174,20 +174,20 @@ class resnet(nn.Module):
         #     print("Load weights from " + url.split('/')[-1])
     def forward(self, x):
         x = self.conv1(x)
-        print(x.shape)
+        #print(x.shape)
         x = self.conv2(x)
-        print(x.shape)
+        #print(x.shape)
         # x = self.conv3(x)
         # print(x.shape)
         x = self.dark2(x)
         #feat1 = x
-        print(x.shape)
+        #print(x.shape)
         #-----------------------------------------------#
         #   dark3的输出为80, 80, 512，是一个有效特征层
         #-----------------------------------------------#
         x = self.dark3(x)
         #feat1 = x
-        print(3,x.shape)
+        #print(3,x.shape)
         
         #-----------------------------------------------#
         #   dark4的输出为40, 40, 1024，是一个有效特征层
@@ -195,12 +195,12 @@ class resnet(nn.Module):
         x = self.dark4(x)
         x_conv4 = self.conv4(x)
         #feat2 = x
-        print(4,x.shape)
+        #print(4,x.shape)
         #-----------------------------------------------#
         #   dark5的输出为20, 20, 1024，是一个有效特征层
         #-----------------------------------------------#
         x = self.dark5(x)
         feat3 = torch.cat((x, x_conv4), dim=1)
         #torch.add(x1, x2)
-        print(5,feat3.shape)
+        #print(5,feat3.shape)
         return None,None,feat3  #, feat2, feat3
