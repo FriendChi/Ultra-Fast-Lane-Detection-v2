@@ -33,8 +33,9 @@ class resnet(torch.nn.Module):
         else:
             raise NotImplementedError
         
-
-        self.conv1 = model.conv1
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        self.conv2 = nn.Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        # self.conv1 = model.conv1
         self.bn1 = model.bn1
         self.relu = model.relu
         self.maxpool = model.maxpool
@@ -45,6 +46,7 @@ class resnet(torch.nn.Module):
 
     def forward(self,x):
         x = self.conv1(x)
+        x = self.conv2(x)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
