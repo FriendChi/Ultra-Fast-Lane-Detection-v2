@@ -124,11 +124,11 @@ class resnet(nn.Module):
             'x' : [-1, -3, -5, -7, -8], 
         }[phi]
         #通道3->transition_channels,长宽/2
-        self.conv1 = Conv(3, transition_channels//4, 3, 2)
+        self.conv1 = Conv(3, transition_channels//4, 3, 1)
         #通道*2，长宽/2
         self.conv2 = Conv(transition_channels//4, transition_channels//2, 3, 1)
         #长宽/2
-        self.conv3 = Conv(transition_channels//2, transition_channels, 3, 1)
+        self.conv3 = Conv(transition_channels//2, transition_channels, 3, 2)
         # self.stem = nn.Sequential(
         #     Conv(3, transition_channels, 3, 2),
         #     Conv(transition_channels, transition_channels * 2, 3, 2),
