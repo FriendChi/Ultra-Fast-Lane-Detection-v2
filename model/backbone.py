@@ -388,14 +388,14 @@ class resnet(torch.nn.Module):
             raise NotImplementedError
         
         self.conv0x = DSConv_pro(
-            512,
-            512,
+            256,
+            256,
             3,
             0,
         )
         self.conv0y = DSConv_pro(
-            512,
-            512,
+            256,
+            256,
             3,
             1,
         )
