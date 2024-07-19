@@ -418,10 +418,11 @@ class resnet(torch.nn.Module):
         x = self.layer1(x)
         x2 = self.layer2(x)
         x3 = self.layer3(x2)
-        x4 = self.layer4(x3)
-        _4x= self.conv0x(x4)
-        _4y= self.conv0y(x4)
-        x5 =self.encoder(torch.cat([_4x, _4y], dim=1))
-        #生成两个特征图后，在通道上合并，再在通道上除以2
+        # print(x4.shape)
+        _4x= self.conv0x(x3)
+        # print(_4x.shape)
+        _4y= self.conv0y(x3)
+        # print(_4y.shape)
+        x5 =torch.cat([_4x, _4y], dim=1)
         
-        return x2,x4,x5
+        return x2,x3,x5
