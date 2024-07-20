@@ -4,54 +4,171 @@ import torch.nn.modules
 from torch import nn
 import numpy as np
 from torch.autograd import Variable
+# 导入记好了，         2维卷积，2维最大池化，展成1维，全连接层，构建网络结构辅助工具,2d网络归一化,激活函数,自适应平均池化
+from torch.nn import Conv2d, MaxPool2d, Flatten, Linear, Sequential, BatchNorm2d, ReLU, AdaptiveAvgPool2d
 
 
-        
-class resnet(torch.nn.Module):
+class resnet(nn.Module):
     def __init__(self,layers,pretrained = False):
-        super(resnet,self).__init__()
-        if layers == '18':
-            model = torchvision.models.resnet18(weights="IMAGENET1K_V1")
-        elif layers == '34':
-            model = torchvision.models.resnet34(weights="IMAGENET1K_V1")
-        elif layers == '50':
-            model = torchvision.models.resnet50(weights="IMAGENET1K_V1")
-        elif layers == '101':
-            model = torchvision.models.resnet101(weights="IMAGENET1K_V1")
-        elif layers == '152':
-            model = torchvision.models.resnet152(weights="IMAGENET1K_V1")
-        elif layers == '50next':
-            model = torchvision.models.resnext50_32x4d(weights="IMAGENET1K_V1")
-        elif layers == '101next':
-            model = torchvision.models.resnext101_32x8d(weights="IMAGENET1K_V1")
-        elif layers == '50wide':
-            model = torchvision.models.wide_resnet50_2(weights="IMAGENET1K_V1")
-        elif layers == '101wide':
-            model = torchvision.models.wide_resnet101_2(weights="IMAGENET1K_V1")
-        elif layers == '34fca':
-            model = torch.hub.load('cfzd/FcaNet', 'fca34' ,pretrained=True)
-        else:
-            raise NotImplementedError
-        
+        super(resnet, self).__init__()
+        self.model0 = Sequential(
+            # 0
+            # 输入3通道、输出64通道、卷积核大小、步长、补零、
+            Conv2d(in_channels=3, out_channels=64, kernel_size=(7, 7), stride=2, padding=3),
+            BatchNorm2d(64),
+            ReLU(),
+            MaxPool2d(kernel_size=(3, 3), stride=2, padding=1),
+        )
+        self.model1 = Sequential(
+            # 1.1
+            Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), stride=1, padding=1),
+            BatchNorm2d(64),
+            ReLU(),
+            Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), stride=1, padding=1),
+            BatchNorm2d(64),
+            ReLU(),
+        )
 
-        self.conv1 = model.conv1
-        self.bn1 = model.bn1
-        self.relu = model.relu
-        self.maxpool = model.maxpool
-        self.layer1 = model.layer1
-        self.layer2 = model.layer2
-        self.layer3 = model.layer3
-        self.layer4 = model.layer4
+        self.R1 = ReLU()
 
-    def forward(self,x):
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.relu(x)
-        x = self.maxpool(x)
-        x = self.layer1(x)
-        x2 = self.layer2(x)
-        x3 = self.layer3(x2)
-        x4 = self.layer4(x3)
+        self.model2 = Sequential(
+            # 1.2
+            Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), stride=1, padding=1),
+            BatchNorm2d(64),
+            ReLU(),
+            Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), stride=1, padding=1),
+            BatchNorm2d(64),
+            ReLU(),
+        )
 
-        
-        return x2,x3,x4
+        self.R2 = ReLU()
+
+        self.model3 = Sequential(
+            # 2.1
+            Conv2d(in_channels=64, out_channels=128, kernel_size=(3, 3), stride=2, padding=1),
+            BatchNorm2d(128),
+            ReLU(),
+            Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=1, padding=1),
+            BatchNorm2d(128),
+            ReLU(),
+        )
+        self.en1 = Sequential(
+            Conv2d(in_channels=64, out_channels=128, kernel_size=(1, 1), stride=2, padding=0),
+            BatchNorm2d(128),
+            ReLU(),
+        )
+        self.R3 = ReLU()
+
+        self.model4 = Sequential(
+            # 2.2
+            Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=1, padding=1),
+            BatchNorm2d(128),
+            ReLU(),
+            Conv2d(in_channels=128, out_channels=128, kernel_size=(3, 3), stride=1, padding=1),
+            BatchNorm2d(128),
+            ReLU(),
+        )
+        self.R4 = ReLU()
+
+        self.model5 = Sequential(
+            # 3.1
+            Conv2d(in_channels=128, out_channels=256, kernel_size=(3, 3), stride=2, padding=1),
+            BatchNorm2d(256),
+            ReLU(),
+            Conv2d(in_channels=256, out_channels=256, kernel_size=(3, 3), stride=1, padding=1),
+            BatchNorm2d(256),
+            ReLU(),
+        )
+        self.en2 = Sequential(
+            Conv2d(in_channels=128, out_channels=256, kernel_size=(1, 1), stride=2, padding=0),
+            BatchNorm2d(256),
+            ReLU(),
+        )
+        self.R5 = ReLU()
+
+        self.model6 = Sequential(
+            # 3.2
+            Conv2d(in_channels=256, out_channels=256, kernel_size=(3, 3), stride=1, padding=1),
+            BatchNorm2d(256),
+            ReLU(),
+            Conv2d(in_channels=256, out_channels=256, kernel_size=(3, 3), stride=1, padding=1),
+            BatchNorm2d(256),
+            ReLU(),
+        )
+        self.R6 = ReLU()
+
+        self.model7 = Sequential(
+            # 4.1
+            Conv2d(in_channels=256, out_channels=512, kernel_size=(3, 3), stride=2, padding=1),
+            BatchNorm2d(512),
+            ReLU(),
+            Conv2d(in_channels=512, out_channels=512, kernel_size=(3, 3), stride=1, padding=1),
+            BatchNorm2d(512),
+            ReLU(),
+        )
+        self.en3 = Sequential(
+            Conv2d(in_channels=256, out_channels=512, kernel_size=(1, 1), stride=2, padding=0),
+            BatchNorm2d(512),
+            ReLU(),
+        )
+        self.R7 = ReLU()
+
+        self.model8 = Sequential(
+            # 4.2
+            Conv2d(in_channels=512, out_channels=512, kernel_size=(3, 3), stride=1, padding=1),
+            BatchNorm2d(512),
+            ReLU(),
+            Conv2d(in_channels=512, out_channels=512, kernel_size=(3, 3), stride=1, padding=1),
+            BatchNorm2d(512),
+            ReLU(),
+        )
+        self.R8 = ReLU()
+
+    def forward(self, x):
+        x = self.model0(x)
+
+        f1 = x
+        x = self.model1(x)
+        x = x + f1
+        x = self.R1(x)
+
+        f1_1 = x
+        x = self.model2(x)
+        x = x + f1_1
+        x = self.R2(x)
+
+        f2_1 = x
+        f2_1 = self.en1(f2_1)
+        x = self.model3(x)
+        x = x + f2_1
+        x = self.R3(x)
+
+        f2_2 = x
+        x = self.model4(x)
+        x = x + f2_2
+        x = self.R4(x)
+
+        f3_1 = x
+        f3_1 = self.en2(f3_1)
+        x = self.model5(x)
+        x = x + f3_1
+        x = self.R5(x)
+
+        f3_2 = x
+        x = self.model6(x)
+        x = x + f3_2
+        x = self.R6(x)
+
+        f4_1 = x
+        f4_1 = self.en3(f4_1)
+        x = self.model7(x)
+        x = x + f4_1
+        x = self.R7(x)
+
+        f4_2 = x
+        x = self.model8(x)
+        x = x + f4_2
+        x = self.R8(x)
+        return None,None,x
+
+
