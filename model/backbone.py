@@ -32,4 +32,4 @@ class resnet(torch.nn.Module):
         x3 = self.layer3(x2)
         x4 = self.layer4(x3)
 
-        return x2,x3,x4
+        return None,None,x4[0]

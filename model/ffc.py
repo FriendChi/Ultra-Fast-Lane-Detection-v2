@@ -34,26 +34,31 @@ class FFCSE_block(nn.Module):
             self.sigmoid(self.conv_a2g(x))
         return x_l, x_g
 
-
+    
 class FourierUnit(nn.Module):
 
-    def __init__(self, in_channels, out_channels, groups=1):
+    def __init__(self, in_channels, out_channels, groups=1, fft_norm='ortho'):
         # bn_layer not used
         super(FourierUnit, self).__init__()
         self.groups = groups
-        self.conv_layer = torch.nn.Conv2d(in_channels=in_channels * 2, out_channels=out_channels * 2,
+
+        self.conv_layer = torch.nn.Conv2d(in_channels=in_channels * 2,
+                                          out_channels=out_channels * 2,
                                           kernel_size=1, stride=1, padding=0, groups=self.groups, bias=False)
         self.bn = torch.nn.BatchNorm2d(out_channels * 2)
         self.relu = torch.nn.ReLU(inplace=True)
 
+        # squeeze and excitation block
+        self.fft_norm = fft_norm
+
     def forward(self, x):
-        batch, c, h, w = x.size()
-        r_size = x.size()
+        batch = x.shape[0]
 
         # (batch, c, h, w/2+1, 2)
-        ffted = torch.fft.rfft(x, signal_ndim=2, normalized=True)
-        # (batch, c, 2, h, w/2+1)
-        ffted = ffted.permute(0, 1, 4, 2, 3).contiguous()
+        fft_dim = (-2, -1)
+        ffted = torch.fft.rfftn(x, dim=fft_dim, norm=self.fft_norm)
+        ffted = torch.stack((ffted.real, ffted.imag), dim=-1)
+        ffted = ffted.permute(0, 1, 4, 2, 3).contiguous()  # (batch, c, 2, h, w/2+1)
         ffted = ffted.view((batch, -1,) + ffted.size()[3:])
 
         ffted = self.conv_layer(ffted)  # (batch, c*2, h, w/2+1)
@@ -61,9 +66,10 @@ class FourierUnit(nn.Module):
 
         ffted = ffted.view((batch, -1, 2,) + ffted.size()[2:]).permute(
             0, 1, 3, 4, 2).contiguous()  # (batch,c, t, h, w/2+1, 2)
+        ffted = torch.complex(ffted[..., 0], ffted[..., 1])
 
-        output = torch.fft.irfft(ffted, signal_ndim=2,
-                             signal_sizes=r_size[2:], normalized=True)
+        ifft_shape_slice = x.shape[-2:]
+        output = torch.fft.irfftn(ffted, s=ifft_shape_slice, dim=fft_dim, norm=self.fft_norm)
 
         return output
 
