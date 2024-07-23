@@ -11,13 +11,13 @@ class resnet(torch.nn.Module):
     def __init__(self,layers,pretrained = False):
         super(resnet,self).__init__()
         
-        model = iresnet18(
+        self.model = iresnet18(
         pretrained=False,
         num_classes=2,
         zero_init_residual=True)
             
 
     def forward(self,x):
-        x4 = model(x)
+        x4 = self.model(x)
         
         return None,None,x4
