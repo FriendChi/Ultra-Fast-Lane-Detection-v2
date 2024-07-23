@@ -4,7 +4,7 @@ import torch.nn.modules
 from torch import nn
 import numpy as np
 from torch.autograd import Variable
-from iresnet import iresnet18
+from .iresnet import iresnet18
 
         
 class resnet(torch.nn.Module):
