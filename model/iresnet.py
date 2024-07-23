@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import os
-from div.download_from_url import download_from_url
+from .div.download_from_url import download_from_url
 
 try:
     from torch.hub import _get_torch_home
