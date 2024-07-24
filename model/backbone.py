@@ -4,6 +4,7 @@ import torch.nn.modules
 from torch import nn
 import numpy as np
 from torch.autograd import Variable
+import einops
 
 # 定义新的下采样模块，它将包含平均池化和1x1卷积
 class AvgPoolDownsample(nn.Module):
