@@ -12,7 +12,7 @@ class resnet(torch.nn.Module):
         super(resnet,self).__init__()
 
         model = SE_ResNet18()
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1, bias=False)
         self.bn1 = model.bn1
         self.layer1 = model.layer1
         self.layer2 = model.layer2
