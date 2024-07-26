@@ -4,34 +4,13 @@ import torch.nn.modules
 from torch import nn
 import numpy as np
 from torch.autograd import Variable
-
+from resnest.torch import resnest50
 
         
 class resnet(torch.nn.Module):
     def __init__(self,layers,pretrained = False):
         super(resnet,self).__init__()
-        if layers == '18':
-            model = torchvision.models.resnet18(weights="IMAGENET1K_V1")
-        elif layers == '34':
-            model = torchvision.models.resnet34(weights="IMAGENET1K_V1")
-        elif layers == '50':
-            model = torchvision.models.resnet50(weights="IMAGENET1K_V1")
-        elif layers == '101':
-            model = torchvision.models.resnet101(weights="IMAGENET1K_V1")
-        elif layers == '152':
-            model = torchvision.models.resnet152(weights="IMAGENET1K_V1")
-        elif layers == '50next':
-            model = torchvision.models.resnext50_32x4d(weights="IMAGENET1K_V1")
-        elif layers == '101next':
-            model = torchvision.models.resnext101_32x8d(weights="IMAGENET1K_V1")
-        elif layers == '50wide':
-            model = torchvision.models.wide_resnet50_2(weights="IMAGENET1K_V1")
-        elif layers == '101wide':
-            model = torchvision.models.wide_resnet101_2(weights="IMAGENET1K_V1")
-        elif layers == '34fca':
-            model = torch.hub.load('cfzd/FcaNet', 'fca34' ,pretrained=True)
-        else:
-            raise NotImplementedError
+        model = resnest50(pretrained=True)
         
 
         self.conv1 = model.conv1
