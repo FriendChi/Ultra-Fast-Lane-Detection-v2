@@ -4,13 +4,13 @@ import torch.nn.modules
 from torch import nn
 import numpy as np
 from torch.autograd import Variable
-from resnest.torch import resnest50
+from resnest.torch import resnest26
 
         
 class resnet(torch.nn.Module):
     def __init__(self,layers,pretrained = False):
         super(resnet,self).__init__()
-        model = resnest50(pretrained=True)
+        model = resnest26(pretrained=True)
         
 
         self.conv1 = model.conv1
