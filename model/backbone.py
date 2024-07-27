@@ -4,32 +4,26 @@ import torch.nn.modules
 from torch import nn
 import numpy as np
 from torch.autograd import Variable
-from .iresnet import iresnet18
+from pycls import models
 
         
 class resnet(torch.nn.Module):
     def __init__(self,layers,pretrained = False):
         super(resnet,self).__init__()
         
-        model = iresnet18(
-        pretrained=False,
-        num_classes=2,
-        zero_init_residual=True)
-        self.conv1 = model.conv1
-        self.bn1 = model.bn1
-        self.relu = model.relu
-        self.layer1 = model.layer1
-        self.layer2 = model.layer2
-        self.layer3 = model.layer3
-        self.layer4 = model.layer4
+        model = models.regnety("600MF", pretrained=True)
+
+        self.stem = model.stem
+        self.s1 = model.s1
+        self.s2 = model.s2
+        self.s3 = model.s3
+        self.s4 = model.s4
 
     def forward(self,x):
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.relu(x)
-        x = self.layer1(x)
-        x2 = self.layer2(x)
-        x3 = self.layer3(x2)
-        x4 = self.layer4(x3)
-        
-        return None,None,x4
+        x = self.stem(x)
+        x = self.s1(x)
+        x = self.s2(x)
+        x = self.s3(x)
+        x = self.s4(x)
+
+        return None,None,x
