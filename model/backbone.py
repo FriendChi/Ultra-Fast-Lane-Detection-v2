@@ -10,7 +10,7 @@ from resnest.torch import resnest14
 class resnet(torch.nn.Module):
     def __init__(self,layers,pretrained = False):
         super(resnet,self).__init__()
-        model = resnest14(pretrained=True)
+        model = resnest14(pretrained=False)
         
 
         self.conv1 = model.conv1
