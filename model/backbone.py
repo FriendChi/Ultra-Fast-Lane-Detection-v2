@@ -10,7 +10,7 @@ from timm import create_model
 class resnet(torch.nn.Module):
     def __init__(self,layers,pretrained = False):
         super(resnet,self).__init__()
-        model_name = "convnext_tiny.fb_in22k"
+        model_name = "convnext_small.fb_in1k"
         model = create_model(model_name, pretrained=True)
         self.stem = model.stem
         self.stages = model.stages
