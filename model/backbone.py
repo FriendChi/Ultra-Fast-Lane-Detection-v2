@@ -424,5 +424,9 @@ class resnet(torch.nn.Module):
         _4y= self.conv0y(x3)
         #print(_4y.shape)
         x5 =torch.cat([_4x, _4y], dim=1)
-        # print(x5.shape)
-        return x2,x3,x5
+        
+        _6x= self.conv0x(x5)
+        _6y= self.conv0y(x5)
+        x7 =self.encoder(torch.cat([_6x, _6y], dim=1))
+        
+        return x2,x3,x7
