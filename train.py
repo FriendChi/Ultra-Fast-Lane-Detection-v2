@@ -46,7 +46,7 @@ def train(net, data_loader, loss_dict, optimizer, scheduler,logger, epoch, metri
                                         **new_kwargs)
         
 def set_seed(seed):
-	random.seed(seed)
+    random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed) # CPU
     torch.cuda.manual_seed(seed) # GPU
