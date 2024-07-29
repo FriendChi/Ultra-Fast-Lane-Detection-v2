@@ -31,12 +31,13 @@ class DSConv_pro(nn.Module):
         extend_scope: float = 1.0,
         morph: int = 0,
         if_offset: bool = True,
-        device: str | torch.device = "cuda",
+        #device: str | torch.device = "cuda",
+        device: torch.device = "cuda",
     ):
         """    
         基于：
 
-            TODO
+            
 
         参数：
             in_ch: 输入通道数。默认为1。
@@ -47,22 +48,7 @@ class DSConv_pro(nn.Module):
             if_offset: 是否需要变形，如果为False，则是标准卷积核。默认为True。
 
         """
-        """
-        A Dynamic Snake Convolution Implementation
 
-        Based on:
-
-            TODO
-
-        Args:
-            in_ch: number of input channels. Defaults to 1.
-            out_ch: number of output channels. Defaults to 1.
-            kernel_size: the size of kernel. Defaults to 9.
-            extend_scope: the range to expand. Defaults to 1 for this method.
-            morph: the morphology of the convolution kernel is mainly divided into two types along the x-axis (0) and the y-axis (1) (see the paper for details).
-            if_offset: whether deformation is required,  if it is False, it is the standard convolution kernel. Defaults to True.
-
-        """
 
         super().__init__()
 
@@ -143,7 +129,8 @@ def get_coordinate_map_2D(
     offset: torch.Tensor,
     morph: int,
     extend_scope: float = 1.0,
-    device: str | torch.device = "cuda",
+    #device: str | torch.device = "cuda",
+    device: torch.device = "cuda",
 ):
     """
     基于给定的偏移量计算DSCNet的2D坐标映射。
@@ -399,6 +386,18 @@ class resnet(torch.nn.Module):
             3,
             1,
         )
+        self.conv1x = DSConv_pro(
+            512,
+            512,
+            3,
+            0,
+        )
+        self.conv1y = DSConv_pro(
+            512,
+            512,
+            3,
+            1,
+        )
         self.encoder = EncoderConv(1024, 512)
 
         self.conv1 = model.conv1
@@ -418,15 +417,15 @@ class resnet(torch.nn.Module):
         x = self.layer1(x)
         x2 = self.layer2(x)
         x3 = self.layer3(x2)
-        #print(x3.shape)
+        # print(x3.shape)
         _4x= self.conv0x(x3)
         #print(_4x.shape)
         _4y= self.conv0y(x3)
         #print(_4y.shape)
         x5 =torch.cat([_4x, _4y], dim=1)
-        
-        _6x= self.conv0x(x5)
-        _6y= self.conv0y(x5)
+        # print(x5.shape)
+        _6x= self.conv1x(x5)
+        _6y= self.conv1y(x5)
         x7 =self.encoder(torch.cat([_6x, _6y], dim=1))
-        
+        # print(x7.shape)
         return x2,x3,x7
