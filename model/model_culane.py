@@ -44,9 +44,12 @@ class parsingNet(torch.nn.Module):
     def forward(self, x):
 
         x2,x3,fea = self.model(x)
+        #fea:batchsize,512,25,10
         if self.use_aux:
             seg_out = self.seg_head(x2, x3,fea)
         fea = self.pool(fea)
+        #fea:batchsize,8,25,10
+        
         # print(fea.shape)
         # print(self.coord.shape)
         # fea = torch.cat([fea, self.coord.repeat(fea.shape[0],1,1,1)], dim = 1)
