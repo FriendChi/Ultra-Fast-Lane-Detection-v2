@@ -55,6 +55,9 @@ class parsingNet(torch.nn.Module):
         # fea = torch.cat([fea, self.coord.repeat(fea.shape[0],1,1,1)], dim = 1)
         
         fea = fea.view(-1, self.input_dim)
+        #fea: batchsize,input_dim
+        #batchsize,250*8
+        
         out = self.cls(fea)
 
         pred_dict = {'loc_row': out[:,:self.dim1].view(-1,self.num_grid_row, self.num_cls_row, self.num_lane_on_row), 
