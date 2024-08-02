@@ -37,7 +37,8 @@ class parsingNet(torch.nn.Module):
             torch.nn.ReLU(),
             torch.nn.Linear(mlp_mid_dim, self.total_dim),
         )
-        self.pool = torch.nn.Conv2d(512,8,1) if backbone in ['34','18', '34fca'] else torch.nn.Conv2d(2048,8,1)
+        self.re = torch.nn.Linear(1024, self.input_dim)
+        #self.pool = torch.nn.Conv2d(512,8,1) if backbone in ['34','18', '34fca'] else torch.nn.Conv2d(2048,8,1)
         if self.use_aux:
             self.seg_head = SegHead(backbone, num_lane_on_row + num_lane_on_col)
         initialize_weights(self.cls)
@@ -46,12 +47,14 @@ class parsingNet(torch.nn.Module):
         x2,x3,fea = self.model(x)
         if self.use_aux:
             seg_out = self.seg_head(x2, x3,fea)
-        fea = self.pool(fea)
+        #fea = self.pool(fea)
         # print(fea.shape)
         # print(self.coord.shape)
         # fea = torch.cat([fea, self.coord.repeat(fea.shape[0],1,1,1)], dim = 1)
         
-        fea = fea.view(-1, self.input_dim)
+        #fea = fea.view(-1, self.input_dim)
+        fea=self.re(fea)
+        #可以加relu
         out = self.cls(fea)
 
         pred_dict = {'loc_row': out[:,:self.dim1].view(-1,self.num_grid_row, self.num_cls_row, self.num_lane_on_row), 
