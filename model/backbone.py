@@ -423,5 +423,5 @@ class resnet(torch.nn.Module):
         _4y= self.conv0y(x4)
         
         #生成两个特征图后，在通道上合并，再在通道上除以2
-        
+        #都是1 512 25 10
         return None,_4x,_4y
