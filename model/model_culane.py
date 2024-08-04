@@ -44,16 +44,20 @@ class parsingNet(torch.nn.Module):
     def forward(self, x):
 
         x2,x3,fea = self.model(x)
+        print('after backbone',fea.shape)
         if self.use_aux:
             seg_out = self.seg_head(x2, x3,fea)
         fea = self.pool(fea)
+        print('after pool',fea.shape)
         # print(fea.shape)
         # print(self.coord.shape)
         # fea = torch.cat([fea, self.coord.repeat(fea.shape[0],1,1,1)], dim = 1)
         
         fea = fea.view(-1, self.input_dim)
+        print('after pool',fea.shape)
         out = self.cls(fea)
-
+        print('after cls',fea.shape)
+        print(self.dim1,self.dim2,self.dim3,self.dim4)
         pred_dict = {'loc_row': out[:,:self.dim1].view(-1,self.num_grid_row, self.num_cls_row, self.num_lane_on_row), 
                 'loc_col': out[:,self.dim1:self.dim1+self.dim2].view(-1, self.num_grid_col, self.num_cls_col, self.num_lane_on_col),
                 'exist_row': out[:,self.dim1+self.dim2:self.dim1+self.dim2+self.dim3].view(-1, 2, self.num_cls_row, self.num_lane_on_row), 
