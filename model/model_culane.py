@@ -37,7 +37,7 @@ class parsingNet(torch.nn.Module):
             torch.nn.ReLU(),
             torch.nn.Linear(mlp_mid_dim, self.total_dim),
         )
-        self.pool = torch.nn.Conv2d(in_channels=512, out_channels=8, kernel_size=3, stride=2, padding=1) if backbone in ['34','18', '34fca'] else torch.nn.Conv2d(2048,8,1)
+        self.pool = torch.nn.Conv2d(in_channels=1024, out_channels=8, kernel_size=3, stride=2, padding=1) if backbone in ['34','18', '34fca'] else torch.nn.Conv2d(2048,8,1)
         if self.use_aux:
             self.seg_head = SegHead(backbone, num_lane_on_row + num_lane_on_col)
         initialize_weights(self.cls)
