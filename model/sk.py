@@ -126,12 +126,14 @@ class SKNet(nn.Module):
             SKUnit(1024, 1024, 32, 2, 8, 2),
             nn.ReLU()
         ) # 8x8
+        self.pool = nn.AvgPool2d(4)
 
     def forward(self, x):
         fea = self.basic_conv(x)
         fea = self.stage_1(fea)
         fea = self.stage_2(fea)
         fea = self.stage_3(fea)
+        fea = self.pool(fea)
 
 #         fea = self.classifier(fea)
         return fea
