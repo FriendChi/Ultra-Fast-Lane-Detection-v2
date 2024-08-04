@@ -56,7 +56,7 @@ class parsingNet(torch.nn.Module):
         fea = fea.view(-1, self.input_dim)
         print('after pool',fea.shape)
         out = self.cls(fea)
-        print('after cls',fea.shape)
+        print('after cls',out.shape)
         print(self.dim1,self.dim2,self.dim3,self.dim4)
         pred_dict = {'loc_row': out[:,:self.dim1].view(-1,self.num_grid_row, self.num_cls_row, self.num_lane_on_row), 
                 'loc_col': out[:,self.dim1:self.dim1+self.dim2].view(-1, self.num_grid_col, self.num_cls_col, self.num_lane_on_col),
