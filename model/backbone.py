@@ -411,6 +411,7 @@ class resnet(torch.nn.Module):
         self.layer4 = model.layer4
 
     def forward(self,x):
+        print(x.shape)
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
