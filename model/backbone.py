@@ -37,8 +37,7 @@ class resnet(torch.nn.Module):
         self.bn1_1 = nn.BatchNorm2d(64)
         self.conv1_2 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn1_2 = nn.BatchNorm2d(64)
-        self.conv1_3 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, bias=False)
-        self.bn1_3 = nn.BatchNorm2d(64)
+
         # self.conv1 = model.conv1
         self.relu = model.relu
         self.maxpool = model.maxpool
@@ -56,9 +55,6 @@ class resnet(torch.nn.Module):
         x = self.bn1_2(x)
         x = self.relu(x)
 
-        x = self.conv1_3(x)
-        x = self.bn1_3(x)
-        x = self.relu(x)
         x = self.maxpool(x)
         x = self.layer1(x)
         x2 = self.layer2(x)
