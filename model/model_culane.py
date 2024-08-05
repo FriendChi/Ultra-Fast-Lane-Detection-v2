@@ -50,7 +50,7 @@ class parsingNet(torch.nn.Module):
         initialize_weights(self.cls2)
     def forward(self, x):
 
-        _,fea1,fea2 = self.model(x)
+        _,fea2,fea1 = self.model(x)
         if self.use_aux:
             seg_out = self.seg_head(x2, x3,fea1)
         fea1 = self.pool(fea1)
