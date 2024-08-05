@@ -46,7 +46,8 @@ class parsingNet(torch.nn.Module):
         self.pool = torch.nn.Conv2d(512,8,1) if backbone in ['34','18', '34fca'] else torch.nn.Conv2d(2048,8,1)
         if self.use_aux:
             self.seg_head = SegHead(backbone, num_lane_on_row + num_lane_on_col)
-        initialize_weights(self.cls)
+        initialize_weights(self.cls1)
+        initialize_weights(self.cls2)
     def forward(self, x):
 
         _,fea1,fea2 = self.model(x)
