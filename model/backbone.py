@@ -33,10 +33,13 @@ class resnet(torch.nn.Module):
         else:
             raise NotImplementedError
         
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
-        self.conv2 = nn.Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        self.conv1_1 = nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, stride=2, padding=1, bias=False)
+        self.bn1_1 = nn.BatchNorm2d(64)
+        self.conv1_2 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, bias=False)
+        self.bn1_2 = nn.BatchNorm2d(64)
+        self.conv1_3 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, bias=False)
+        self.bn1_3 = nn.BatchNorm2d(64)
         # self.conv1 = model.conv1
-        self.bn1 = model.bn1
         self.relu = model.relu
         self.maxpool = model.maxpool
         self.layer1 = model.layer1
@@ -45,9 +48,16 @@ class resnet(torch.nn.Module):
         self.layer4 = model.layer4
 
     def forward(self,x):
-        x = self.conv1(x)
-        x = self.conv2(x)
-        x = self.bn1(x)
+        x = self.conv1_1(x)
+        x = self.bn1_1(x)
+        x = self.relu(x)
+
+        x = self.conv1_2(x)
+        x = self.bn1_2(x)
+        x = self.relu(x)
+
+        x = self.conv1_3(x)
+        x = self.bn1_3(x)
         x = self.relu(x)
         x = self.maxpool(x)
         x = self.layer1(x)
