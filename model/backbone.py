@@ -10,8 +10,8 @@ class resnet(torch.nn.Module):
     def __init__(self,layers,pretrained = False):
         super(resnet,self).__init__()
         self.model = ViT(
-            image_size = 256,
-            patch_size = 32,
+            image_size = 800,
+            patch_size = 40,
             num_classes = 1000,
             dim = 1024,
             depth = 6,
