@@ -46,6 +46,9 @@ class resnet(torch.nn.Module):
         self.layer2 = model.layer2
         self.layer3 = model.layer3
         self.layer4 = model.layer4
+        del model.conv1    
+        del model.fc
+        del model.avgpool
 
     def forward(self,x):
         x = self.conv1_1(x)
