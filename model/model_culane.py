@@ -38,14 +38,14 @@ class parsingNet(torch.nn.Module):
             torch.nn.Linear(mlp_mid_dim, self.total_dim),
         )
         self.pool = torch.nn.Conv2d(512,8,1) if backbone in ['34','18', '34fca'] else torch.nn.Conv2d(2048,8,1)
-        if self.use_aux:
-            self.seg_head = SegHead(backbone, num_lane_on_row + num_lane_on_col)
+        # if self.use_aux:
+        #     self.seg_head = SegHead(backbone, num_lane_on_row + num_lane_on_col)
         initialize_weights(self.cls)
     def forward(self, x):
 
         x2,x3,fea = self.model(x)
-        if self.use_aux:
-            seg_out = self.seg_head(x2, x3,fea)
+        # if self.use_aux:
+        #     seg_out = self.seg_head(x2, x3,fea)
         fea = self.pool(fea)
         # print(fea.shape)
         # print(self.coord.shape)
@@ -58,8 +58,8 @@ class parsingNet(torch.nn.Module):
                 'loc_col': out[:,self.dim1:self.dim1+self.dim2].view(-1, self.num_grid_col, self.num_cls_col, self.num_lane_on_col),
                 'exist_row': out[:,self.dim1+self.dim2:self.dim1+self.dim2+self.dim3].view(-1, 2, self.num_cls_row, self.num_lane_on_row), 
                 'exist_col': out[:,-self.dim4:].view(-1, 2, self.num_cls_col, self.num_lane_on_col)}
-        if self.use_aux:
-            pred_dict['seg_out'] = seg_out
+        # if self.use_aux:
+        #     pred_dict['seg_out'] = seg_out
         
         return pred_dict
 
