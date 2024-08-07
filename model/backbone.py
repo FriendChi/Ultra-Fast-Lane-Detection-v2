@@ -6,18 +6,6 @@ import numpy as np
 from torch.autograd import Variable
 import einops
 
-class vgg16bn(torch.nn.Module):
-    def __init__(self,pretrained = False):
-        super(vgg16bn,self).__init__()
-        model = list(torchvision.models.vgg16_bn(pretrained=pretrained).features.children())
-        model = model[:33]+model[34:43]
-        self.model = torch.nn.Sequential(*model)
-        
-    def forward(self,x):
-        return self.model(x)
-        
-
-
 
 """Dynamic Snake Convolution Module"""
 
@@ -389,12 +377,24 @@ class resnet(torch.nn.Module):
         
         self.conv0x = DSConv_pro(
             256,
-            512,
+            256,
             3,
             0,
         )
         self.conv0y = DSConv_pro(
             256,
+            256,
+            3,
+            1,
+        )
+        self.conv1x = DSConv_pro(
+            512,
+            512,
+            3,
+            0,
+        )
+        self.conv1y = DSConv_pro(
+            512,
             512,
             3,
             1,
@@ -418,11 +418,16 @@ class resnet(torch.nn.Module):
         x = self.layer1(x)
         x2 = self.layer2(x)
         x3 = self.layer3(x2)
-        #print(x3.shape)
+        # print(x3.shape)
         _4x= self.conv0x(x3)
         #print(_4x.shape)
         _4y= self.conv0y(x3)
+        #print(_4y.shape)
+        x5 =torch.cat([_4x, _4y], dim=1)
+        # print(x5.shape)
+        _6x= self.conv1x(x5)
+        _6y= self.conv1y(x5)
         
         #生成两个特征图后，在通道上合并，再在通道上除以2
         #都是1 512 25 10
-        return None,_4x,_4y
+        return None,_6x,_6y
