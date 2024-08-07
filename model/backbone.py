@@ -5,7 +5,37 @@ from torch import nn
 import numpy as np
 from torch.autograd import Variable
 
+# 定义新的下采样模块，它将包含平均池化和1x1卷积
+class AvgPoolDownsample(nn.Module):
+    def __init__(self, in_channels, out_channels, pool_size, pool_stride):
+        super(AvgPoolDownsample, self).__init__()
+        self.pool = nn.AvgPool2d(pool_size, pool_stride)
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=1)
 
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.pool(x)
+        return x
+    
+# 修改第一个残差块的快捷连接
+def change_shortcut(layer):
+    first_residual_block = layer[0]
+
+    # 检查是否需要下采样
+    if first_residual_block.downsample is not None:
+        # 获取输入和输出的通道数
+        in_channels = first_residual_block.conv1.in_channels
+        out_channels = first_residual_block.conv2.out_channels
+
+        # 计算池化大小和步长，通常与卷积的步长相同
+        pool_size = 2  # 保持特征图尺寸不变
+        pool_stride = first_residual_block.downsample[0].stride[0]  # 使用卷积的步长
+
+        # 创建新的下采样模块
+        new_downsample = AvgPoolDownsample(in_channels, out_channels, pool_size, pool_stride)
+
+        # 替换旧的下采样模块
+        first_residual_block.downsample = nn.Sequential(new_downsample)
         
 class resnet(torch.nn.Module):
     def __init__(self,layers,pretrained = False):
@@ -46,6 +76,10 @@ class resnet(torch.nn.Module):
         self.layer2 = model.layer2
         self.layer3 = model.layer3
         self.layer4 = model.layer4
+        change_shortcut(self.layer1)
+        change_shortcut(self.layer2)
+        change_shortcut(self.layer3)
+        change_shortcut(self.layer4)
 
     def forward(self,x):
         x = self.conv1_1(x)
