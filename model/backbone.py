@@ -388,13 +388,13 @@ class resnet(torch.nn.Module):
             raise NotImplementedError
         
         self.conv0x = DSConv_pro(
-            512,
+            256,
             512,
             3,
             0,
         )
         self.conv0y = DSConv_pro(
-            512,
+            256,
             512,
             3,
             1,
@@ -418,9 +418,10 @@ class resnet(torch.nn.Module):
         x = self.layer1(x)
         x2 = self.layer2(x)
         x3 = self.layer3(x2)
-        x4 = self.layer4(x3)
-        _4x= self.conv0x(x4)
-        _4y= self.conv0y(x4)
+        #print(x3.shape)
+        _4x= self.conv0x(x3)
+        #print(_4x.shape)
+        _4y= self.conv0y(x3)
         
         #生成两个特征图后，在通道上合并，再在通道上除以2
         #都是1 512 25 10
