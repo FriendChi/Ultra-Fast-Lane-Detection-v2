@@ -216,8 +216,13 @@ def resnet18_cbam(pretrained=False, **kwargs):
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
     if pretrained:
         pretrained_state_dict = model_zoo.load_url(model_urls['resnet18'])
-        now_state_dict        = model.state_dict()
-        now_state_dict.update(pretrained_state_dict)
+        now_state_dict = model.state_dict()
+        
+        # 遍历预训练模型的状态字典
+        for name, param in pretrained_state_dict.items():
+            if name in now_state_dict:
+                if now_state_dict[name].size() == param.size():
+                    now_state_dict[name].copy_(param)
         model.load_state_dict(now_state_dict)
     return model
 
@@ -230,9 +235,14 @@ def resnet34_cbam(pretrained=False, **kwargs):
     """
     model = ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
     if pretrained:
-        pretrained_state_dict = model_zoo.load_url(model_urls['resnet34'])
-        now_state_dict        = model.state_dict()
-        now_state_dict.update(pretrained_state_dict)
+        pretrained_state_dict = model_zoo.load_url(model_urls['resnet18'])
+        now_state_dict = model.state_dict()
+        
+        # 遍历预训练模型的状态字典
+        for name, param in pretrained_state_dict.items():
+            if name in now_state_dict:
+                if now_state_dict[name].size() == param.size():
+                    now_state_dict[name].copy_(param)
         model.load_state_dict(now_state_dict)
     return model
 
@@ -245,9 +255,14 @@ def resnet50_cbam(pretrained=False, **kwargs):
     """
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
-        pretrained_state_dict = model_zoo.load_url(model_urls['resnet50'])
-        now_state_dict        = model.state_dict()
-        now_state_dict.update(pretrained_state_dict)
+        pretrained_state_dict = model_zoo.load_url(model_urls['resnet18'])
+        now_state_dict = model.state_dict()
+        
+        # 遍历预训练模型的状态字典
+        for name, param in pretrained_state_dict.items():
+            if name in now_state_dict:
+                if now_state_dict[name].size() == param.size():
+                    now_state_dict[name].copy_(param)
         model.load_state_dict(now_state_dict)
     return model
 
@@ -260,9 +275,14 @@ def resnet101_cbam(pretrained=False, **kwargs):
     """
     model = ResNet(Bottleneck, [3, 4, 23, 3], **kwargs)
     if pretrained:
-        pretrained_state_dict = model_zoo.load_url(model_urls['resnet101'])
-        now_state_dict        = model.state_dict()
-        now_state_dict.update(pretrained_state_dict)
+        pretrained_state_dict = model_zoo.load_url(model_urls['resnet18'])
+        now_state_dict = model.state_dict()
+        
+        # 遍历预训练模型的状态字典
+        for name, param in pretrained_state_dict.items():
+            if name in now_state_dict:
+                if now_state_dict[name].size() == param.size():
+                    now_state_dict[name].copy_(param)
         model.load_state_dict(now_state_dict)
     return model
 
@@ -275,8 +295,13 @@ def resnet152_cbam(pretrained=False, **kwargs):
     """
     model = ResNet(Bottleneck, [3, 8, 36, 3], **kwargs)
     if pretrained:
-        pretrained_state_dict = model_zoo.load_url(model_urls['resnet152'])
-        now_state_dict        = model.state_dict()
-        now_state_dict.update(pretrained_state_dict)
+        pretrained_state_dict = model_zoo.load_url(model_urls['resnet18'])
+        now_state_dict = model.state_dict()
+        
+        # 遍历预训练模型的状态字典
+        for name, param in pretrained_state_dict.items():
+            if name in now_state_dict:
+                if now_state_dict[name].size() == param.size():
+                    now_state_dict[name].copy_(param)
         model.load_state_dict(now_state_dict)
     return model
