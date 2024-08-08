@@ -11,6 +11,8 @@ from utils.common import get_work_dir, get_logger
 import time
 from evaluation.eval_wrapper import eval_lane
 
+import random
+import numpy as np
 def train(net, data_loader, loss_dict, optimizer, scheduler,logger, epoch, metric_dict, dataset):
     net.train()
     progress_bar = dist_tqdm(train_loader)
