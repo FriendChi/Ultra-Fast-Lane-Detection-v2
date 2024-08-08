@@ -14,6 +14,7 @@ class resnet(torch.nn.Module):
     
     def forward(self,x):
         x = self.model(x)
-        
+        _4x= self.conv0x(x)
+        _4y= self.conv0y(x)       
 
-        return None,None,x
+        return None,_4x,_4y
