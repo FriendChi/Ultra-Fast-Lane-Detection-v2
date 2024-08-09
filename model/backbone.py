@@ -362,6 +362,7 @@ class resnet(torch.nn.Module):
             3,
             1,
         )
+        self.encoder = EncoderConv(1024, 512)
         self.model = resnet18_cbam(True)
     
     
