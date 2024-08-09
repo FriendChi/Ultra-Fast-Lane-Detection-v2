@@ -5,7 +5,7 @@ from torch import nn
 import numpy as np
 from torch.autograd import Variable
 from .cbam import resnet18_cbam
-
+import einops
 """Dynamic Snake Convolution Module"""
 
 
