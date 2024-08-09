@@ -32,8 +32,8 @@ class parsingNet(torch.nn.Module):
         # self.register_buffer('coord', torch.stack([torch.linspace(0.5,9.5,10).view(-1,1).repeat(1,50), torch.linspace(0.5,49.5,50).repeat(10,1)]).view(1,2,10,50))
 
         self.cls = torch.nn.Sequential(
-            torch.nn.LayerNorm(self.input_dim) if fc_norm else torch.nn.Identity(),
-            torch.nn.Linear(self.input_dim, mlp_mid_dim),
+            torch.nn.LayerNorm(1280) if fc_norm else torch.nn.Identity(),
+            torch.nn.Linear(1280, mlp_mid_dim),
             torch.nn.ReLU(),
             torch.nn.Linear(mlp_mid_dim, self.total_dim),
         )
@@ -47,12 +47,12 @@ class parsingNet(torch.nn.Module):
         #print(fea.shape)
         if self.use_aux:
             seg_out = self.seg_head(x2, x3,fea)
-        fea = self.pool(fea)
+        #fea = self.pool(fea)
         # print(fea.shape)
         # print(self.coord.shape)
         # fea = torch.cat([fea, self.coord.repeat(fea.shape[0],1,1,1)], dim = 1)
         
-        fea = fea.view(-1, self.input_dim)
+        #fea = fea.view(-1, self.input_dim)
         out = self.cls(fea)
 
         pred_dict = {'loc_row': out[:,:self.dim1].view(-1,self.num_grid_row, self.num_cls_row, self.num_lane_on_row), 
