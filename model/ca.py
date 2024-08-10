@@ -253,6 +253,7 @@ def resnet18_ca(pretrained=False, **kwargs):
                 if now_state_dict[name].size() == param.size():
                     now_state_dict[name].copy_(param)
         model.load_state_dict(now_state_dict)
+    return model
 
 
 def resnet34_ca(pretrained=False, **kwargs):
