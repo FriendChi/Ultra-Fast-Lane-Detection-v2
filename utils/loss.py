@@ -88,6 +88,20 @@ class SoftmaxFocalLoss(nn.Module):
         # import pdb; pdb.set_trace()
         return loss
 
+class WeightedCrossEntropyLoss(nn.Module):
+    def __init__(self, weight=None):
+        super(WeightedCrossEntropyLoss, self).__init__()
+        self.weight = weight
+
+    def forward(self, logits, target):
+        # 计算权重，如果没有提供 weight，可以根据 target 的分布计算权重
+        if self.weight is None:
+            class_counts = torch.bincount(target)
+            self.weight = 1.0 / (class_counts.float() + 1e-10)
+        
+        return torch.nn.functional.cross_entropy(logits, target, weight=self.weight.to(logits.device))
+
+
 class ParsingRelationLoss(nn.Module):
     def __init__(self):
         super(ParsingRelationLoss, self).__init__()
@@ -103,9 +117,11 @@ class ParsingRelationLoss(nn.Module):
 class MeanLoss(nn.Module):
     def __init__(self):
         super(MeanLoss, self).__init__()
+        #reduction 参数设置为 'none'。这意味着损失将不会在维度上进行求和或平均，而是保留每个元素的损失值。
         self.l1 = nn.SmoothL1Loss(reduction = 'none')
     def forward(self, logits, label):
         n,c,h,w = logits.shape
+        #创建 (1, c, 1, 1) 的张量，其中包含从 0 到 c-1 的整数。这表示类别索引，并将在后续步骤中用作权重。
         grid = torch.arange(c, device=logits.device).view(1,c,1,1)
         logits = (logits.softmax(1) * grid).sum(1)
         loss = self.l1(logits, label.float())[label != -1]
