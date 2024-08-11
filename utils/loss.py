@@ -96,7 +96,8 @@ class WeightedCrossEntropyLoss(nn.Module):
     def forward(self, logits, target):
         # 计算权重，如果没有提供 weight，可以根据 target 的分布计算权重
         if self.weight is None:
-            class_counts = torch.bincount(target)
+            flat_target = target.view(-1)
+            class_counts = torch.bincount(flat_target)
             self.weight = 1.0 / (class_counts.float() + 1e-10)
         
         return torch.nn.functional.cross_entropy(logits, target, weight=self.weight.to(logits.device))
