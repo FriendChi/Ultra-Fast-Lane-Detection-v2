@@ -234,11 +234,11 @@ def calc_loss(loss_dict, results, logger, global_step, epoch):
 
         if loss_dict['weight'][i] == 0:
             continue
-            
+        print('loss name:',loss_dict['name'])
         data_src = loss_dict['data_src'][i]
-
+        print('data:',data_src)
         datas = [results[src] for src in data_src]
-
+        print([i.shape for i in datas])
         loss_cur = loss_dict['op'][i](*datas)
 
         if global_step % 20 == 0:
