@@ -53,8 +53,10 @@ class swish(nn.Module):
 class CoordAtt(nn.Module):
     def __init__(self, inp, oup, groups=32):
         super(CoordAtt, self).__init__()
-        self.pool_h = nn.AdaptiveAvgPool2d((None, 1))
-        self.pool_w = nn.AdaptiveAvgPool2d((1, None))
+        self.pool_h_avg = nn.AdaptiveAvgPool2d((None, 1))
+        self.pool_w_avg = nn.AdaptiveAvgPool2d((1, None))
+        self.pool_h_max = nn.AdaptiveMaxPool2d((None, 1))
+        self.pool_w_max = nn.AdaptiveMaxPool2d((1, None))
 
         mip = max(8, inp // groups)
 
@@ -62,18 +64,30 @@ class CoordAtt(nn.Module):
         self.bn1 = nn.BatchNorm2d(mip)
         self.conv2 = nn.Conv2d(mip, oup, kernel_size=1, stride=1, padding=0)
         self.conv3 = nn.Conv2d(mip, oup, kernel_size=1, stride=1, padding=0)
-        self.relu = h_swish()
+        self.relu = nn.Hardswish()
 
     def forward(self, x):
         identity = x
-        n,c,h,w = x.size()
-        x_h = self.pool_h(x)
-        x_w = self.pool_w(x).permute(0, 1, 3, 2)
+        n, c, h, w = x.size()
 
-        y = torch.cat([x_h, x_w], dim=2)
+        # Average pooling
+        x_h_avg = self.pool_h_avg(x)
+        x_w_avg = self.pool_w_avg(x).permute(0, 1, 3, 2)
+
+        # Max pooling
+        x_h_max = self.pool_h_max(x)
+        x_w_max = self.pool_w_max(x).permute(0, 1, 3, 2)
+
+        # Concatenate average and max pool results
+        y_avg = torch.cat([x_h_avg, x_w_avg], dim=2)
+        y_max = torch.cat([x_h_max, x_w_max], dim=2)
+        
+        y = torch.cat([y_avg, y_max], dim=1)
+
         y = self.conv1(y)
         y = self.bn1(y)
-        y = self.relu(y) 
+        y = self.relu(y)
+        
         x_h, x_w = torch.split(y, [h, w], dim=2)
         x_w = x_w.permute(0, 1, 3, 2)
 
