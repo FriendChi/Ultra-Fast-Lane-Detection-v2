@@ -34,12 +34,14 @@ class parsingNet(torch.nn.Module):
         self.cls1 = torch.nn.Sequential(
             torch.nn.LayerNorm(self.input_dim) if fc_norm else torch.nn.Identity(),
             torch.nn.Linear(self.input_dim, mlp_mid_dim),
+            torch.nn.Dropout(p=0.95),
             torch.nn.ReLU(),
             torch.nn.Linear(mlp_mid_dim, self.dim1+self.dim3),
         )
         self.cls2 = torch.nn.Sequential(
             torch.nn.LayerNorm(self.input_dim) if fc_norm else torch.nn.Identity(),
             torch.nn.Linear(self.input_dim, mlp_mid_dim),
+            torch.nn.Dropout(p=0.95),
             torch.nn.ReLU(),
             torch.nn.Linear(mlp_mid_dim, self.dim2+self.dim4),
         )
