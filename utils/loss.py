@@ -22,6 +22,48 @@ class OhemCELoss(nn.Module):
             loss = loss[:self.n_min]
         return torch.mean(loss)
 
+class FocalLoss(nn.Module):
+    def __init__(self, alpha=1, gamma=2, reduction='mean'):
+        super(FocalLoss, self).__init__()
+        self.alpha = alpha
+        self.gamma = gamma
+        self.reduction = reduction
+
+    def forward(self, input, target):
+        # input: (N, C, d1, d2, ..., dk)
+        # target: (N, d1, d2, ..., dk)
+        
+        # 将 input 的维度 (N, C, d1, d2, ..., dk) 展平为 (N, C, D) 形式
+        # 其中 D = d1*d2*...*dk
+        n, c = input.size(0), input.size(1)
+        input = input.view(n, c, -1)
+        
+        # 将 target 展平为 (N, D)
+        target = target.view(n, -1)
+        
+        # 将 input 转置并调整为 (N*D, C)
+        input = input.permute(0, 2, 1).reshape(-1, c)
+        
+        # 将 target 调整为 (N*D,)
+        target = target.view(-1)
+        
+        # 计算交叉熵损失，不进行 reduction
+        ce_loss = F.cross_entropy(input, target, reduction='none')
+        
+        # 计算概率
+        pt = torch.exp(-ce_loss)
+        
+        # 计算 Focal Loss
+        focal_loss = self.alpha * (1 - pt) ** self.gamma * ce_loss
+        
+        # 根据 reduction 参数返回相应的损失值
+        if self.reduction == 'mean':
+            return focal_loss.mean()
+        elif self.reduction == 'sum':
+            return focal_loss.sum()
+        else:
+            return focal_loss
+
 def soft_nll(pred, target, ignore_index = -1):
     C = pred.shape[1]
     invalid_target_index = target==ignore_index
