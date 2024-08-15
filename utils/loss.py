@@ -4,33 +4,19 @@ import torch.nn.functional as F
 
 import numpy as np
 
-class DynamicWeightCrossEntropyLoss(nn.Module):
-    def __init__(self, gamma=2):
-        super(DynamicWeightCrossEntropyLoss, self).__init__()
-        self.gamma = gamma  # 动态权重的调节参数
-        self.cross_entropy_loss = nn.CrossEntropyLoss(reduction='none')  # 初始化交叉熵损失
+class LabelSmoothingCrossEntropyLoss(nn.Module):
+    def __init__(self, alpha=0.1):
+        super(LabelSmoothingCrossEntropyLoss, self).__init__()
+        self.alpha = alpha  # 标签平滑化的系数
 
     def forward(self, logits, targets):
-        # logits 的形状为 [batch_size, num_classes, height, width]
-        # targets 的形状为 [batch_size, height, width]
-
-        # 计算交叉熵损失，不进行任何聚合
-        loss = self.cross_entropy_loss(logits, targets)
-
-        # 计算预测的概率（应用 softmax）
-        probs = F.softmax(logits, dim=1)  # [batch_size, 2, height, width]
-
-        # 提取正类的置信度 pt
-        pt = torch.gather(probs, 1, targets.unsqueeze(1)).squeeze(1)
-
-        # 根据预测的置信度动态调整权重
-        dynamic_weight = (1 - pt) ** self.gamma
-
-        # 应用动态权重
-        loss = dynamic_weight * loss
-
-        # 返回加权损失的均值
-        return loss.mean()
+        # 标签平滑：将目标标签从0/1平滑化到(1-alpha, alpha)
+        targets_smooth = (1 - self.alpha) * targets + self.alpha * 0.5
+        
+        # 计算损失
+        loss = F.binary_cross_entropy_with_logits(logits, targets_smooth)
+        
+        return loss
 
 class OhemCELoss(nn.Module):
     def __init__(self, thresh, n_min, ignore_lb=255, *args, **kwargs):
