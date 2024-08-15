@@ -36,16 +36,16 @@ class FocalLoss(nn.Module):
         # 将 input 的维度 (N, C, d1, d2, ..., dk) 展平为 (N, C, D) 形式
         # 其中 D = d1*d2*...*dk
         n, c = input.size(0), input.size(1)
-        input = input.view(n, c, -1)
+        input = input.reshape(n, c, -1)
         
         # 将 target 展平为 (N, D)
-        target = target.view(n, -1)
+        target = target.reshape(n, -1)
         
         # 将 input 转置并调整为 (N*D, C)
         input = input.permute(0, 2, 1).reshape(-1, c)
         
         # 将 target 调整为 (N*D,)
-        target = target.view(-1)
+        target = target.reshape(-1)
         
         # 计算交叉熵损失，不进行 reduction
         ce_loss = F.cross_entropy(input, target, reduction='none')
