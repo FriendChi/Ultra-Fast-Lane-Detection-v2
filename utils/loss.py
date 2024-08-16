@@ -14,7 +14,7 @@ class LabelSmoothingCrossEntropyLoss(nn.Module):
         targets_smooth = (1 - self.alpha) * targets + self.alpha * 0.5
         
         # 计算损失
-        loss = F.binary_cross_entropy_with_logits(logits, targets_smooth)
+        loss = nn.CrossEntropyLoss(logits, targets_smooth)
         
         return loss
 
