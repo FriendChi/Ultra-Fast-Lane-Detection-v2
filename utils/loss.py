@@ -8,13 +8,14 @@ class LabelSmoothingCrossEntropyLoss(nn.Module):
     def __init__(self, alpha=0.1):
         super(LabelSmoothingCrossEntropyLoss, self).__init__()
         self.alpha = alpha  # 标签平滑化的系数
+        self.loser = nn.CrossEntropyLoss()
 
     def forward(self, logits, targets):
         # 标签平滑：将目标标签从0/1平滑化到(1-alpha, alpha)
         targets_smooth = (1 - self.alpha) * targets + self.alpha * 0.5
         
         # 计算损失
-        loss = nn.CrossEntropyLoss(logits, targets_smooth)
+        loss = self.loser(logits, targets_smooth)
         
         return loss
 
