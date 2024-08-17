@@ -5,7 +5,7 @@ import json
 import numpy as np
 
 class LaneAwareCrossEntropyLoss(nn.Module):
-    def __init__(self, gamma=2, connectivity_weight=0.01):
+    def __init__(self, gamma=2, connectivity_weight=0.0001):
         super(LaneAwareCrossEntropyLoss, self).__init__()
         self.gamma = gamma  # 调节参数
         self.cross_entropy_loss = nn.CrossEntropyLoss(reduction='none')  # 交叉熵损失
