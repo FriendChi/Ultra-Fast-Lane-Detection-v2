@@ -5,19 +5,46 @@ import torch.nn.functional as F
 import numpy as np
 
 class LabelSmoothingCrossEntropyLoss(nn.Module):
-    def __init__(self, alpha=0.1):
-        super(LabelSmoothingCrossEntropyLoss, self).__init__()
-        self.alpha = alpha  # 标签平滑化的系数
-        self.loser = nn.CrossEntropyLoss()
+    ''' Cross Entropy Loss with label smoothing '''
+    def __init__(self, label_smooth=0.01, class_num=2):
+        super().__init__()
+        self.label_smooth = label_smooth
+        self.class_num = class_num
 
-    def forward(self, logits, targets):
-        # 标签平滑：将目标标签从0/1平滑化到(1-alpha, alpha)
-        targets_smooth = (1 - self.alpha) * targets + self.alpha * 0.5
+    def forward(self, pred, target):
+#         print(pred.shape,target.shape)
+        ''' 
+        Args:
+            pred: prediction of model output    [N, M]
+            target: ground truth of sampler [N]
+        '''
+        # 将 pred 从 [32, 2, 44, 4] 变为 [32*44*4, 2]
+        pred = pred.view(-1, pred.size(1))
         
-        # 计算损失
-        loss = self.loser(logits, targets_smooth)
+        # 将 target 从 [32, 44, 4] 变为 [32*44*4]
+        target = target.view(-1)
+#         print(pred.shape,target.shape)
+        eps = 1e-12
         
-        return loss
+        if self.label_smooth is not None:
+            # cross entropy loss with label smoothing
+            logprobs = F.log_softmax(pred, dim=1)	# softmax + log
+            target = F.one_hot(target, self.class_num)	# 转换成one-hot
+#             print(logprobs.shape)
+#             print(target.shape)
+            # label smoothing
+            # 实现 1
+            # target = (1.0-self.label_smooth)*target + self.label_smooth/self.class_num 	
+            # 实现 2
+            # implement 2
+            target = torch.clamp(target.float(), min=self.label_smooth/(self.class_num-1), max=1.0-self.label_smooth)
+            loss = -1*torch.sum(target*logprobs, 1)
+        
+        else:
+            # standard cross entropy loss
+            loss = -1.*pred.gather(1, target.unsqueeze(-1)) + torch.log(torch.exp(pred+eps).sum(dim=1))
+
+        return loss.mean()
 
 class OhemCELoss(nn.Module):
     def __init__(self, thresh, n_min, ignore_lb=255, *args, **kwargs):
