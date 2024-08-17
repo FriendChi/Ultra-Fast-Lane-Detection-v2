@@ -19,11 +19,11 @@ class LabelSmoothingCrossEntropyLoss(nn.Module):
             target: ground truth of sampler [N]
         '''
         # 将 pred 从 [32, 2, 44, 4] 变为 [32*44*4, 2]
-        print(pred.shape,target.shape)
-        pred = pred.view(-1, self.class_num)
+        #print(pred.shape,target.shape)
+        pred = pred.reshape(-1, self.class_num)
         
         # 将 target 从 [32, 44, 4] 变为 [32*44*4]
-        target = target.view(-1)
+        target = target.reshape(-1)
 #         print(pred.shape,target.shape)
         eps = 1e-12
         
