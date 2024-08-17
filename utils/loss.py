@@ -13,7 +13,16 @@ class DynamicWeightCrossEntropyLoss(nn.Module):
     def forward(self, logits, targets):
         # logits 的形状为 [batch_size, num_classes, height, width]
         # targets 的形状为 [batch_size, height, width]
-
+        # 创建一个PyTorch Tensor
+        tensor = torch.tensor([[1, 2], [3, 4]])
+        
+        # 将Tensor转换为列表
+        tensor_list = tensor.tolist()
+        
+        # 保存到JSON文件
+        with open('tensor{tensor_list[-2]}.json', 'w') as f:
+            json.dump(tensor_list, f)
+        print('*****************************')
         # 计算交叉熵损失，不进行任何聚合
         loss = self.cross_entropy_loss(logits, targets)
 
