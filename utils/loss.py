@@ -6,46 +6,43 @@ import numpy as np
 
 class LabelSmoothingCrossEntropyLoss(nn.Module):
     ''' Cross Entropy Loss with label smoothing '''
-    def __init__(self, label_smooth=0.01, class_num=2):
+    def __init__(self, label_smooth=0.0001, class_num=2):
         super().__init__()
         self.label_smooth = label_smooth
         self.class_num = class_num
 
     def forward(self, pred, target):
-#         print(pred.shape,target.shape)
-        ''' 
+        '''
         Args:
-            pred: prediction of model output    [N, M]
+            pred: prediction of model output [N, M]
             target: ground truth of sampler [N]
         '''
-        # 将 pred 从 [32, 2, 44, 4] 变为 [32*44*4, 2]
-        #print(pred.shape,target.shape)
+        # 将 pred 从 [32, 2, 41, 4] 变为 [32*41*4, 2]
         pred = pred.reshape(-1, self.class_num)
         
-        # 将 target 从 [32, 44, 4] 变为 [32*44*4]
+        # 将 target 从 [32, 41, 4] 变为 [32*41*4]
         target = target.reshape(-1)
-#         print(pred.shape,target.shape)
+
+        # epsilon，用于避免数值问题
         eps = 1e-12
-        
+
         if self.label_smooth is not None:
             # cross entropy loss with label smoothing
-            logprobs = F.log_softmax(pred, dim=1)	# softmax + log
-            target = F.one_hot(target, self.class_num)	# 转换成one-hot
-#             print(logprobs.shape)
-#             print(target.shape)
-            # label smoothing
-            # 实现 1
-            # target = (1.0-self.label_smooth)*target + self.label_smooth/self.class_num 	
-            # 实现 2
-            # implement 2
-            target = torch.clamp(target.float(), min=self.label_smooth/(self.class_num-1), max=1.0-self.label_smooth)
-            loss = -1*torch.sum(target*logprobs, 1)
+            logprobs = F.log_softmax(pred, dim=1)  # softmax + log
+            target = F.one_hot(target, self.class_num)  # 转换成one-hot
+
+            # 实现1: 进行标签平滑处理
+            target = (1.0 - self.label_smooth) * target + self.label_smooth / self.class_num
+            
+            # 计算损失
+            loss = -1 * torch.sum(target * logprobs, dim=1)
         
         else:
             # standard cross entropy loss
-            loss = -1.*pred.gather(1, target.unsqueeze(-1)) + torch.log(torch.exp(pred+eps).sum(dim=1))
+            loss = -1. * pred.gather(1, target.unsqueeze(-1)) + torch.log(torch.exp(pred + eps).sum(dim=1))
 
         return loss.mean()
+
 
 class OhemCELoss(nn.Module):
     def __init__(self, thresh, n_min, ignore_lb=255, *args, **kwargs):
