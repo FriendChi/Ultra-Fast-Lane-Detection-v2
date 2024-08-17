@@ -4,42 +4,46 @@ import torch.nn.functional as F
 import json
 import numpy as np
 
-class DynamicWeightCrossEntropyLoss(nn.Module):
-    def __init__(self, gamma=2):
-        super(DynamicWeightCrossEntropyLoss, self).__init__()
-        self.gamma = gamma  # 动态权重的调节参数
-        self.cross_entropy_loss = nn.CrossEntropyLoss(reduction='none')  # 初始化交叉熵损失
+class LaneAwareCrossEntropyLoss(nn.Module):
+    def __init__(self, gamma=2, connectivity_weight=0.01):
+        super(LaneAwareCrossEntropyLoss, self).__init__()
+        self.gamma = gamma  # 调节参数
+        self.cross_entropy_loss = nn.CrossEntropyLoss(reduction='none')  # 交叉熵损失
+        self.connectivity_weight = connectivity_weight 
 
     def forward(self, logits, targets):
-        # logits 的形状为 [batch_size, num_classes, height, width]
-        # targets 的形状为 [batch_size, height, width]
-        # 创建一个PyTorch Tensor
-        tensor = targets
+        """
+        logits: [batch_size, num_classes, num_points, num_lanes] (32, 2, 41, 4)
+        targets: [batch_size, num_points, num_lanes] (32, 41, 4)
+        """
+        batch_size, num_classes, num_points, num_lanes = logits.shape
+
+        # 计算基础交叉熵损失
+        loss_ce = self.cross_entropy_loss(logits, targets)  # [batch_size, num_points, num_lanes]
+
         
-        # 将Tensor转换为列表
-        tensor_list = tensor.tolist()
-        
-        # 保存到JSON文件
-        with open('tensor{tensor_list[-2]}.json', 'w') as f:
-            json.dump(tensor_list, f)
-        print('*****************************')
-        # 计算交叉熵损失，不进行任何聚合
-        loss = self.cross_entropy_loss(logits, targets)
+        # 首先对 logits 进行 softmax，计算类别概率
+        probs = F.softmax(logits, dim=1)  # [batch_size, 2, 41, 4]
 
-        # 计算预测的概率（应用 softmax）
-        probs = F.softmax(logits, dim=1)  # [batch_size, 2, height, width]
+        # 将类别预测结果转换为与 target 相同的形状 (batch_size, num_points, num_lanes)
+        pred_classes = torch.argmax(probs, dim=1)  # [batch_size, 41, 4]
 
-        # 提取正类的置信度 pt
-        pt = torch.gather(probs, 1, targets.unsqueeze(1)).squeeze(1)
+     
+        connectivity_loss = torch.zeros_like(loss_ce)
 
-        # 根据预测的置信度动态调整权重
-        dynamic_weight = (1 - pt) ** self.gamma
+        for lane in range(num_lanes):
+            for point in range(1, num_points): 
+               
+                same_class = (pred_classes[:, point, lane] == pred_classes[:, point - 1, lane]).float()
 
-        # 应用动态权重
-        loss = dynamic_weight * loss
+         
+                connectivity_loss[:, point, lane] = 1 - same_class
 
-        # 返回加权损失的均值
-        return loss.mean()
+       
+        total_loss = loss_ce + self.connectivity_weight * connectivity_loss
+
+        # 返回损失的均值
+        return total_loss.mean()
 
 class OhemCELoss(nn.Module):
     def __init__(self, thresh, n_min, ignore_lb=255, *args, **kwargs):
