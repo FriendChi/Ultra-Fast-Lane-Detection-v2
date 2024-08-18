@@ -34,15 +34,17 @@ class parsingNet(torch.nn.Module):
         self.cls1 = torch.nn.Sequential(
             torch.nn.LayerNorm(self.input_dim) if fc_norm else torch.nn.Identity(),
             torch.nn.Linear(self.input_dim, mlp_mid_dim),
-            torch.nn.ReLU(),
-            torch.nn.Linear(mlp_mid_dim, self.dim1+self.dim3),
+            torch.nn.ReLU()
         )
+        liner3 = torch.nn.Linear(mlp_mid_dim, self.dim3)
+        liner1 = torch.nn.Linear(mlp_mid_dim, self.dim1)
         self.cls2 = torch.nn.Sequential(
             torch.nn.LayerNorm(self.input_dim) if fc_norm else torch.nn.Identity(),
             torch.nn.Linear(self.input_dim, mlp_mid_dim),
             torch.nn.ReLU(),
-            torch.nn.Linear(mlp_mid_dim, self.dim2+self.dim4),
         )
+        liner2 = torch.nn.Linear(mlp_mid_dim, self.dim2)
+        liner4 = torch.nn.Linear(mlp_mid_dim, self.dim4)
         self.pool = torch.nn.Conv2d(512,8,1) if backbone in ['34','18', '34fca'] else torch.nn.Conv2d(2048,8,1)
         if self.use_aux:
             self.seg_head = SegHead(backbone, num_lane_on_row + num_lane_on_col)
@@ -64,12 +66,16 @@ class parsingNet(torch.nn.Module):
         
         out1 = self.cls1(fea1)
         out2 = self.cls2(fea2)
-        
 
-        pred_dict = {'loc_row': out1[:,:self.dim1].view(-1,self.num_grid_row, self.num_cls_row, self.num_lane_on_row), 
-                'loc_col': out2[:,:self.dim2].view(-1, self.num_grid_col, self.num_cls_col, self.num_lane_on_col),
-                'exist_row': out1[:,-self.dim3:].view(-1, 2, self.num_cls_row, self.num_lane_on_row), 
-                'exist_col': out2[:,-self.dim4:].view(-1, 2, self.num_cls_col, self.num_lane_on_col)}
+        d1 = liner1(out1)
+        d2 = liner2(out2)
+        d3 = liner3(out1)
+        d4 = liner4(out2)
+
+        pred_dict = {'loc_row': d1.view(-1,self.num_grid_row, self.num_cls_row, self.num_lane_on_row), 
+                'loc_col': d2.view(-1, self.num_grid_col, self.num_cls_col, self.num_lane_on_col),
+                'exist_row': d3.view(-1, 2, self.num_cls_row, self.num_lane_on_row), 
+                'exist_col': d4.view(-1, 2, self.num_cls_col, self.num_lane_on_col)}
         if self.use_aux:
             pred_dict['seg_out'] = seg_out
         
