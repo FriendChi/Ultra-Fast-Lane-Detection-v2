@@ -36,15 +36,15 @@ class parsingNet(torch.nn.Module):
             torch.nn.Linear(self.input_dim, mlp_mid_dim),
             torch.nn.ReLU()
         )
-        liner3 = torch.nn.Linear(mlp_mid_dim, self.dim3)
-        liner1 = torch.nn.Linear(mlp_mid_dim, self.dim1)
+        self.liner3 = torch.nn.Linear(mlp_mid_dim, self.dim3)
+        self.liner1 = torch.nn.Linear(mlp_mid_dim, self.dim1)
         self.cls2 = torch.nn.Sequential(
             torch.nn.LayerNorm(self.input_dim) if fc_norm else torch.nn.Identity(),
             torch.nn.Linear(self.input_dim, mlp_mid_dim),
             torch.nn.ReLU(),
         )
-        liner2 = torch.nn.Linear(mlp_mid_dim, self.dim2)
-        liner4 = torch.nn.Linear(mlp_mid_dim, self.dim4)
+        self.liner2 = torch.nn.Linear(mlp_mid_dim, self.dim2)
+        self.liner4 = torch.nn.Linear(mlp_mid_dim, self.dim4)
         self.pool = torch.nn.Conv2d(512,8,1) if backbone in ['34','18', '34fca'] else torch.nn.Conv2d(2048,8,1)
         if self.use_aux:
             self.seg_head = SegHead(backbone, num_lane_on_row + num_lane_on_col)
@@ -67,10 +67,10 @@ class parsingNet(torch.nn.Module):
         out1 = self.cls1(fea1)
         out2 = self.cls2(fea2)
 
-        d1 = liner1(out1)
-        d2 = liner2(out2)
-        d3 = liner3(out1)
-        d4 = liner4(out2)
+        d1 = self.liner1(out1)
+        d2 = self.liner2(out2)
+        d3 = self.liner3(out1)
+        d4 = self.liner4(out2)
 
         pred_dict = {'loc_row': d1.view(-1,self.num_grid_row, self.num_cls_row, self.num_lane_on_row), 
                 'loc_col': d2.view(-1, self.num_grid_col, self.num_cls_col, self.num_lane_on_col),
