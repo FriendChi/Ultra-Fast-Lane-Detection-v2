@@ -74,11 +74,7 @@ class parsingNet(torch.nn.Module):
             pred_dict['seg_out'] = seg_out
         
         return pred_dict
-
-    def forward_tta(self, x):
-        x2,x3,fea = self.model(x)
-        print('测试')
-        pooled_fea = self.pool(fea)
+    def tta(self,pooled_fea):
         n,c,h,w = pooled_fea.shape
 
         left_pooled_fea = torch.zeros_like(pooled_fea)
@@ -99,14 +95,29 @@ class parsingNet(torch.nn.Module):
         down_pooled_fea[:,:,0,:] = pooled_fea.mean(-2)
         # 10 x 25
         fea = torch.cat([pooled_fea, left_pooled_fea, right_pooled_fea, up_pooled_fea, down_pooled_fea], dim = 0)
-        fea = fea.view(-1, self.input_dim)
+        return fea
+        
+    def forward_tta(self, x):
+        _,fea2,fea1 = self.model(x)
+        
+        fea1 = self.pool(fea1)
+        fea2 = self.pool(fea2)
+        
+        fea1 = self.tta(fea1)
+        fea2 = self.tta(fea2)
+        
+        fea1 = fea1.view(-1, self.input_dim)
+        fea2 = fea2.view(-1, self.input_dim)
+        
+        out1 = self.cls1(fea1)
+        out2 = self.cls2(fea2)
 
-        out = self.cls(fea)
-
-        return {'loc_row': out[:,:self.dim1].view(-1,self.num_grid_row, self.num_cls_row, self.num_lane_on_row), 
-                'loc_col': out[:,self.dim1:self.dim1+self.dim2].view(-1, self.num_grid_col, self.num_cls_col, self.num_lane_on_col),
-                'exist_row': out[:,self.dim1+self.dim2:self.dim1+self.dim2+self.dim3].view(-1, 2, self.num_cls_row, self.num_lane_on_row), 
-                'exist_col': out[:,-self.dim4:].view(-1, 2, self.num_cls_col, self.num_lane_on_col)}
+        pred_dict = {'loc_row': out1[:,:self.dim1].view(-1,self.num_grid_row, self.num_cls_row, self.num_lane_on_row), 
+                'loc_col': out2[:,:self.dim2].view(-1, self.num_grid_col, self.num_cls_col, self.num_lane_on_col),
+                'exist_row': out1[:,-self.dim3:].view(-1, 2, self.num_cls_row, self.num_lane_on_row), 
+                'exist_col': out2[:,-self.dim4:].view(-1, 2, self.num_cls_col, self.num_lane_on_col)}
+        
+        return pred_dict
 
 def get_model(cfg):
     return parsingNet(pretrained = True, backbone=cfg.backbone, num_grid_row = cfg.num_cell_row, num_cls_row = cfg.num_row, num_grid_col = cfg.num_cell_col, num_cls_col = cfg.num_col, num_lane_on_row = cfg.num_lanes, num_lane_on_col = cfg.num_lanes, use_aux = cfg.use_aux, input_height = cfg.train_height, input_width = cfg.train_width, fc_norm = cfg.fc_norm).cuda()
