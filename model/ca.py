@@ -312,6 +312,7 @@ def resnet18_ca(pretrained=False, **kwargs):
         # 更新当前模型的权重
         now_state_dict.update(pretrained_state_dict)
         model.load_state_dict(now_state_dict)
+    return model
 
 
 def resnet34_ca(pretrained=False, **kwargs):
