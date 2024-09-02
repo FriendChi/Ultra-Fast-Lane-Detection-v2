@@ -4,6 +4,7 @@ from utils.dist_utils import get_rank, get_world_size, is_main_process, dist_pri
 from utils.config import Config
 import torch
 import time
+import json
 
 def str2bool(v):
     if isinstance(v, bool):
