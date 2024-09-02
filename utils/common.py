@@ -236,7 +236,7 @@ def calc_loss(loss_dict, results, logger, global_step, epoch):
             continue
             
         data_src = loss_dict['data_src'][i]
-        for src in data_src
+        for src in data_src:
             with open('{src}.json', 'w') as f:
                 # 将数据写入JSON文件
                 json.dump(results[src], f, indent=4)
