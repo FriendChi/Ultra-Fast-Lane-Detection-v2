@@ -228,6 +228,12 @@ def inference_curvelanes(net, data_label):
         res_dict['seg_label'] = data_label['segs']
     return res_dict
 
+def tensor_to_serializable(obj):
+    if isinstance(obj, torch.Tensor):
+        return obj.tolist()  # 将 Tensor 转换为列表
+    raise TypeError(f'Object of type {obj.__class__.__name__} is not JSON serializable')
+
+
 def calc_loss(loss_dict, results, logger, global_step, epoch):
     loss = 0
 
@@ -240,7 +246,7 @@ def calc_loss(loss_dict, results, logger, global_step, epoch):
         for src in data_src:
             with open('{src}.json', 'w') as f:
                 # 将数据写入JSON文件
-                json.dump(results[src], f, indent=4)
+                json.dump(results[src], f, indent=4, default=tensor_to_serializable)
 
         datas = [results[src] for src in data_src]
 
