@@ -139,5 +139,7 @@ if __name__ == "__main__":
             max_res = res
             save_model(net, optimizer, epoch, work_dir, distributed)
         logger.add_scalar('CuEval/X',max_res,global_step = epoch)
+        if resume_epoch+30 == epoch:
+            break
 
     logger.close()
