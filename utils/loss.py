@@ -4,46 +4,31 @@ import torch.nn.functional as F
 import json
 import numpy as np
 
+def compute_boundary_weights(labels, alpha=1.0):
+    diff = torch.abs(labels[:, 1:, :] - labels[:, :-1, :])
+    boundary_weights = torch.zeros_like(labels).float()
+    boundary_weights[:, 1:, :] += alpha * diff
+    boundary_weights[:, :-1, :] += alpha * diff
+    boundary_weights = boundary_weights + 1.0
+    return boundary_weights
+
 class LaneAwareCrossEntropyLoss(nn.Module):
-    def __init__(self, gamma=2, connectivity_weight=0.0001):
+    def __init__(self, gamma=1.0):
         super(LaneAwareCrossEntropyLoss, self).__init__()
         self.gamma = gamma  # 调节参数
         self.cross_entropy_loss = nn.CrossEntropyLoss(reduction='none')  # 交叉熵损失
-        self.connectivity_weight = connectivity_weight 
 
     def forward(self, logits, targets):
-        """
-        logits: [batch_size, num_classes, num_points, num_lanes] (32, 2, 41, 4)
-        targets: [batch_size, num_points, num_lanes] (32, 41, 4)
-        """
-        batch_size, num_classes, num_points, num_lanes = logits.shape
-
-        # 计算基础交叉熵损失
-        loss_ce = self.cross_entropy_loss(logits, targets)  # [batch_size, num_points, num_lanes]
-
+        loss = criterion(logits, targets)
+        # 计算权重矩阵
+        weights = compute_boundary_weights(targets,self.gamma)
+        weighted_loss = loss * weights  # 乘以权重矩阵
         
-        # 首先对 logits 进行 softmax，计算类别概率
-        probs = F.softmax(logits, dim=1)  # [batch_size, 2, 41, 4]
-
-        # 将类别预测结果转换为与 target 相同的形状 (batch_size, num_points, num_lanes)
-        pred_classes = torch.argmax(probs, dim=1)  # [batch_size, 41, 4]
-
-     
-        connectivity_loss = torch.zeros_like(loss_ce)
-
-        for lane in range(num_lanes):
-            for point in range(1, num_points): 
-               
-                same_class = (pred_classes[:, point, lane] == pred_classes[:, point - 1, lane]).float()
-
-         
-                connectivity_loss[:, point, lane] = 1 - same_class
-
-       
-        total_loss = loss_ce + self.connectivity_weight * connectivity_loss
+        # 取平均得到最终损失
+        final_loss = weighted_loss.mean()
 
         # 返回损失的均值
-        return total_loss.mean()
+        return final_loss
 
 class OhemCELoss(nn.Module):
     def __init__(self, thresh, n_min, ignore_lb=255, *args, **kwargs):
