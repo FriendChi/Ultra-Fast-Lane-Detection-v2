@@ -140,7 +140,7 @@ if __name__ == "__main__":
             #save_bestmodel(net, optimizer, epoch, work_dir, distributed)
         save_model(net, optimizer, epoch, work_dir, distributed)
         logger.add_scalar('CuEval/X',max_res,global_step = epoch)
-        if resume_epoch+7 == epoch:
+        if resume_epoch+6 == epoch:
             break
 
     logger.close()
