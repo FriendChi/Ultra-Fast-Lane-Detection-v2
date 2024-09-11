@@ -34,14 +34,8 @@ class LaneAwareCrossEntropyLoss(nn.Module):
         for lane in range(num_lanes):
             tolerance = 2
             for point in range(1, num_points): 
-                
                 same_class = (pred_classes[:, point, lane] == pred_classes[:, point - 1, lane]).float()
-
-                if same_class == 0 and tolerance != 0:
-                    tolerance-=1
-                    connectivity_loss[:, point, lane] = 0
-                else:
-                    connectivity_loss[:, point, lane] = 1 - same_class
+                connectivity_loss[:, point, lane] = 1 - same_class
 
        
         total_loss = loss_ce + self.connectivity_weight * connectivity_loss
