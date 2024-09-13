@@ -62,7 +62,7 @@ def generate_linestxt_on_curvelane_val():
     res = fp.readlines()
     fp.close()
     res = [os.path.join('valid', r) for r in res]
-    with open(os.path.join(curvelane_val_root, 'valid_for_culane_style.txt'), 'w') as fp:
+    with open(os.path.join('/kaggle/working/images', 'valid_for_culane_style.txt'), 'w') as fp:
         fp.writelines(res)
 
 
