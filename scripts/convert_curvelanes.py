@@ -104,13 +104,13 @@ def get_curvelanes_list(root, label_dir):
     
     return names,line_txt
 
-def generate_segmentation_and_train_list(root, line_txt, names, file_name='train_gt.txt', json_name='curvelanes_anno_cache.json'):
+def generate_segmentation_and_train_list(root, line_txt, names, file_name='train_gt.txt', json_name='curvelanes_anno_cache.json',save_root = '/kaggle/working/'):
     """
     The lane annotations of the Tusimple dataset is not strictly in order, so we need to find out the correct lane order for segmentation.
     We use the same definition as CULane, in which the four lanes from left to right are represented as 1,2,3,4 in segentation label respectively.
     """
     assert os.path.exists(root)
-    train_gt_fp = open(os.path.join(root, file_name), 'w')
+    train_gt_fp = open(os.path.join(save_root, file_name), 'w')
     cache_dict = {}
     if not os.path.exists(os.path.join(root, 'segs')):
         os.mkdir(os.path.join(root, 'segs'))
@@ -160,7 +160,7 @@ def generate_segmentation_and_train_list(root, line_txt, names, file_name='train
 
         train_gt_fp.write('train/'+names[i] + ' ' + 'train/' +label_path + ' '+' '.join(list(map(str,bin_label))) + '\n')
     train_gt_fp.close()
-    with open(os.path.join(root, json_name), 'w') as f:
+    with open(os.path.join(save_root, json_name), 'w') as f:
         json.dump(cache_dict, f)
 
 
@@ -175,7 +175,7 @@ if __name__ == "__main__":
 
     names, line_txt = get_curvelanes_list(args.root,  'train')
     # generate training list for training
-    generate_segmentation_and_train_list('/kaggle/working/', line_txt, names)
+    generate_segmentation_and_train_list(os.path.join(args.root, 'train'), line_txt, names)
 
 
     # names, line_txt = get_curvelanes_list(args.root,  'valid')
