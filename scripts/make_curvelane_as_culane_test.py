@@ -41,7 +41,7 @@ def generate_linestxt_on_curvelane_val():
     list_file = os.path.join(curvelane_val_root, 'valid.txt')
 
     all_files = open(list_file, 'r').readlines()
-    os.makedirs('/kaggle/working/valid')
+    os.makedirs('/kaggle/working/images')
     for file in tqdm.tqdm(all_files):
         file = file.strip()
         label_path = file.replace('images', 'labels')
@@ -53,7 +53,7 @@ def generate_linestxt_on_curvelane_val():
         width, height = imagesize.get(file_path)
 
         culane_style_label = read_label(label_path, x_factor = 2560 / width, y_factor = 1440 / height)
-        culane_style_label_store_path = os.path.join('/kaggle/working/valid', file).replace('jpg','lines.txt')
+        culane_style_label_store_path = os.path.join('/kaggle/working', file).replace('jpg','lines.txt')
         with open(culane_style_label_store_path, 'w') as f:
             for culane_style_label_i in culane_style_label:
                 f.write(' '.join(culane_style_label_i)+'\n')
