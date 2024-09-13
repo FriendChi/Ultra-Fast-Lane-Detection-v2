@@ -33,4 +33,3 @@ num_cell_row=200
 num_cell_col=100
 mean_loss_w=0.05
 crop_ratio = 0.8
-train_txt_root = '/kaggle/input/curvelanes'
