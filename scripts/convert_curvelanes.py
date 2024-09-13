@@ -175,7 +175,7 @@ if __name__ == "__main__":
 
     names, line_txt = get_curvelanes_list(args.root,  'train')
     # generate training list for training
-    generate_segmentation_and_train_list(os.path.join(args.root, 'train'), line_txt, names)
+    generate_segmentation_and_train_list('/kaggle/working/', line_txt, names)
 
 
     # names, line_txt = get_curvelanes_list(args.root,  'valid')
