@@ -5,12 +5,28 @@ import json
 import numpy as np
 
 def compute_boundary_weights(labels, alpha=1.0):
-    diff = torch.abs(labels[:, 1:, :] - labels[:, :-1, :])
+    beta = alpha*0.5
+    # 计算相邻点之间的差异 (一阶邻域)
+    diff1 = torch.abs(labels[:, 1:, :] - labels[:, :-1, :])
+    
+    # 计算隔一个点的差异 (二阶邻域)
+    diff2 = torch.abs(labels[:, 2:, :] - labels[:, :-2, :])
+
+    # 初始化权重矩阵
     boundary_weights = torch.zeros_like(labels).float()
-    boundary_weights[:, 1:, :] += alpha * diff
-    boundary_weights[:, :-1, :] += alpha * diff
+    
+    # 为一阶邻域加上权重
+    boundary_weights[:, 1:, :] += alpha * diff1
+    boundary_weights[:, :-1, :] += alpha * diff1
+
+    # 为二阶邻域加上较小的权重 (权重由 beta 控制)
+    boundary_weights[:, 2:, :] += beta * diff2
+    boundary_weights[:, :-2, :] += beta * diff2
+    
+    # 加 1.0 保证权重不为 0
     boundary_weights = boundary_weights + 1.0
     return boundary_weights
+
 
 class LaneAwareCrossEntropyLoss(nn.Module):
     def __init__(self, gamma=1.0):
