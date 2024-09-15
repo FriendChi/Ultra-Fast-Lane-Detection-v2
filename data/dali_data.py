@@ -89,7 +89,7 @@ class LaneExternalIterator(object):
                 seg_name='/'.join(parts)                    
                         
             img_path = os.path.join(self.path, img_name)
-
+            print(self.path, img_name)
             with open(img_path, 'rb') as f:
                 images.append(np.frombuffer(f.read(), dtype=np.uint8))
             if self.dataset_name == 'Tusimple':
