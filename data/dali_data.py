@@ -87,7 +87,7 @@ class LaneExternalIterator(object):
                 # 复制最上父路径  
                 parts.insert(1, parts[0])  
                 seg_name='/'.join(parts)      
-            elif self.dataset_name = 'CurveLanes':
+            elif self.dataset_name == 'CurveLanes':
                 img_name = img_name.replace('train/', '')
                         
             img_path = os.path.join(self.path, img_name)
