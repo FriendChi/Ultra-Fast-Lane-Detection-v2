@@ -14,7 +14,7 @@ class LaneExternalIterator(object):
         assert mode in ['train', 'test']
         self.mode = mode
         self.path = path
-        self.list_path = list_path
+        self.list_path = '/kaggle/input/d/chiyunhao/curvelanes'
         self.batch_size = batch_size
         self.shard_id = shard_id
         self.num_shards = num_shards
