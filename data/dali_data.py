@@ -86,10 +86,12 @@ class LaneExternalIterator(object):
                 parts = seg_name.split('/')  
                 # 复制最上父路径  
                 parts.insert(1, parts[0])  
-                seg_name='/'.join(parts)                    
+                seg_name='/'.join(parts)      
+            elif self.dataset_name = 'CurveLanes':
+                img_name = img_name.replace('train/', '')
                         
             img_path = os.path.join(self.path, img_name)
-            print(self.path, img_name)
+            # print(self.path, img_name)
             with open(img_path, 'rb') as f:
                 images.append(np.frombuffer(f.read(), dtype=np.uint8))
             if self.dataset_name == 'Tusimple':
