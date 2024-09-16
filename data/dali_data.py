@@ -100,7 +100,7 @@ class LaneExternalIterator(object):
                 img_path = os.path.join('/kaggle/input/d/chiyunhao/curvelanes', seg_name)
             else:
                 img_path = os.path.join(self.path, seg_name)
-            img_name = img_name.replace('train/', '')
+            img_path = img_path.replace('train/', '')
             with open(img_path, 'rb') as f:
                 seg_images.append(np.frombuffer(f.read(), dtype=np.uint8))
 
