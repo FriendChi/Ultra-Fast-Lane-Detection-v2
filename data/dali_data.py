@@ -20,8 +20,8 @@ class LaneExternalIterator(object):
         self.num_shards = num_shards
         self.dataset_name = dataset_name
 
-        if isinstance(self.list_path, str):
-            with open(self.list_path, 'r') as f:
+        if isinstance('/kaggle/input/d/chiyunhao/curvelanes/train_gt.txt', str):
+            with open('/kaggle/input/d/chiyunhao/curvelanes/train_gt.txt', 'r') as f:
                 total_list = f.readlines()
         elif isinstance(self.list_path, list) or isinstance(self.list_path, tuple):
             total_list = []
