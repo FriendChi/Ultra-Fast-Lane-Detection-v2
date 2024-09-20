@@ -78,7 +78,7 @@ def get_test_loader(batch_size, data_root,dataset, distributed, crop_ratio, trai
             transforms.ToTensor(),
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
-        test_dataset = LaneTestDataset(data_root,os.path.join('/kaggle/input/curve_val/images', 'valid_for_culane_style.txt'),img_transform = img_transforms, crop_size=train_height)
+        test_dataset = LaneTestDataset(data_root,os.path.join('/kaggle/input/curve-val/images', 'valid_for_culane_style.txt'),img_transform = img_transforms, crop_size=train_height)
     else:
         raise NotImplementedError
     if distributed:
