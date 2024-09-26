@@ -50,13 +50,13 @@ class swish(nn.Module):
     def forward(self, x):
         return x * torch.sigmoid(x)
     
-class ELA72(nn.Module):
-    def __init__(self,  channel,_, ks=7):
-        super(ELA72, self).__init__()
+class ELA73(nn.Module):
+    def __init__(self,  channel, ks=5):
+        super(ELA73, self).__init__()
 
         p = ks // 2
-        self.conv = nn.Conv1d(channel, channel, kernel_size=ks, padding=p, groups=channel//8, bias=False)
-        self.gn = nn.GroupNorm(16, channel)
+        self.conv = nn.Conv1d(channel, channel, kernel_size=ks, padding=p, groups=1, bias=False)
+        self.gn = nn.GroupNorm(32,channel)
         self.sig = nn.Sigmoid()
 
     def forward(self, x):
