@@ -51,7 +51,7 @@ class swish(nn.Module):
         return x * torch.sigmoid(x)
     
 class CoordAtt(nn.Module):
-    def __init__(self, channel,channel， reduction=32):
+    def __init__(self, channel,_, reduction=32):
         super(CA_Block, self).__init__()
 
         self.conv_1x1 = nn.Conv2d(in_channels=channel, out_channels=channel // reduction, kernel_size=1, stride=1, bias=False)
