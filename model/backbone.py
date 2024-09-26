@@ -350,24 +350,11 @@ class EncoderConv(nn.Module):
 class resnet(torch.nn.Module):
     def __init__(self,layers,pretrained = False):
         super(resnet,self).__init__()
-        self.conv0x = DSConv_pro(
-            512,
-            512,
-            3,
-            0,
-        )
-        self.conv0y = DSConv_pro(
-            512,
-            512,
-            3,
-            1,
-        )
         self.model = resnet18_ca(True)
     
     
     def forward(self,x):
         x = self.model(x)
-        _4x= self.conv0x(x)
-        _4y= self.conv0y(x)
+        
 
-        return None,_4x,_4y
+        return None,None,x
