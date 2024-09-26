@@ -29,7 +29,7 @@ def compute_boundary_weights(labels, alpha=1.0):
 
 class LaneAwareCrossEntropyLoss(nn.Module):
     def __init__(self, gamma=1.0, connectivity_weight=0.0001):
-        super(CombinedLaneLoss, self).__init__()
+        super(LaneAwareCrossEntropyLoss, self).__init__()
         self.gamma = gamma  # 权重调节参数
         self.cross_entropy_loss = nn.CrossEntropyLoss(reduction='none')  # 交叉熵损失
         self.connectivity_weight = connectivity_weight  # 连通性损失的权重
