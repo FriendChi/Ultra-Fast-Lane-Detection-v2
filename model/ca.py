@@ -81,7 +81,7 @@ class BasicBlock(nn.Module):
         self.conv2 = conv3x3(planes, planes)
         self.bn2 = nn.BatchNorm2d(planes)
 
-        self.coordatt = ELA72(planes, planes)
+        self.coordatt = ELA73(planes, planes)
 
         self.downsample = downsample
         self.stride = stride
