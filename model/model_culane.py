@@ -50,26 +50,21 @@ class parsingNet(torch.nn.Module):
         initialize_weights(self.cls2)
     def forward(self, x):
 
-        _,fea2,fea1 = self.model(x)
+        x2,x3,fea = self.model(x)
         if self.use_aux:
-            seg_out = self.seg_head(x2, x3,fea1)
-        fea1 = self.pool(fea1)
-        fea2 = self.pool(fea2)
+            seg_out = self.seg_head(x2, x3,fea)
+        fea = self.pool(fea)
         # print(fea.shape)
         # print(self.coord.shape)
         # fea = torch.cat([fea, self.coord.repeat(fea.shape[0],1,1,1)], dim = 1)
         
-        fea1 = fea1.view(-1, self.input_dim)
-        fea2 = fea2.view(-1, self.input_dim)
-        
-        out1 = self.cls1(fea1)
-        out2 = self.cls2(fea2)
-        
+        fea = fea.view(-1, self.input_dim)
+        out = self.cls(fea)
 
-        pred_dict = {'loc_row': out1[:,:self.dim1].view(-1,self.num_grid_row, self.num_cls_row, self.num_lane_on_row), 
-                'loc_col': out2[:,:self.dim2].view(-1, self.num_grid_col, self.num_cls_col, self.num_lane_on_col),
-                'exist_row': out1[:,-self.dim3:].view(-1, 2, self.num_cls_row, self.num_lane_on_row), 
-                'exist_col': out2[:,-self.dim4:].view(-1, 2, self.num_cls_col, self.num_lane_on_col)}
+        pred_dict = {'loc_row': out[:,:self.dim1].view(-1,self.num_grid_row, self.num_cls_row, self.num_lane_on_row), 
+                'loc_col': out[:,self.dim1:self.dim1+self.dim2].view(-1, self.num_grid_col, self.num_cls_col, self.num_lane_on_col),
+                'exist_row': out[:,self.dim1+self.dim2:self.dim1+self.dim2+self.dim3].view(-1, 2, self.num_cls_row, self.num_lane_on_row), 
+                'exist_col': out[:,-self.dim4:].view(-1, 2, self.num_cls_col, self.num_lane_on_col)}
         if self.use_aux:
             pred_dict['seg_out'] = seg_out
         
