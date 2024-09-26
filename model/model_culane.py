@@ -31,23 +31,16 @@ class parsingNet(torch.nn.Module):
 
         # self.register_buffer('coord', torch.stack([torch.linspace(0.5,9.5,10).view(-1,1).repeat(1,50), torch.linspace(0.5,49.5,50).repeat(10,1)]).view(1,2,10,50))
 
-        self.cls1 = torch.nn.Sequential(
+        self.cls = torch.nn.Sequential(
             torch.nn.LayerNorm(self.input_dim) if fc_norm else torch.nn.Identity(),
             torch.nn.Linear(self.input_dim, mlp_mid_dim),
             torch.nn.ReLU(),
-            torch.nn.Linear(mlp_mid_dim, self.dim1+self.dim3),
-        )
-        self.cls2 = torch.nn.Sequential(
-            torch.nn.LayerNorm(self.input_dim) if fc_norm else torch.nn.Identity(),
-            torch.nn.Linear(self.input_dim, mlp_mid_dim),
-            torch.nn.ReLU(),
-            torch.nn.Linear(mlp_mid_dim, self.dim2+self.dim4),
+            torch.nn.Linear(mlp_mid_dim, self.total_dim),
         )
         self.pool = torch.nn.Conv2d(512,8,1) if backbone in ['34','18', '34fca'] else torch.nn.Conv2d(2048,8,1)
         if self.use_aux:
             self.seg_head = SegHead(backbone, num_lane_on_row + num_lane_on_col)
-        initialize_weights(self.cls1)
-        initialize_weights(self.cls2)
+        initialize_weights(self.cls)
     def forward(self, x):
 
         x2,x3,fea = self.model(x)
@@ -72,7 +65,7 @@ class parsingNet(torch.nn.Module):
 
     def forward_tta(self, x):
         x2,x3,fea = self.model(x)
-        print('测试')
+
         pooled_fea = self.pool(fea)
         n,c,h,w = pooled_fea.shape
 
