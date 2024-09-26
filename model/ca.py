@@ -51,40 +51,35 @@ class swish(nn.Module):
         return x * torch.sigmoid(x)
     
 class CoordAtt(nn.Module):
-    def __init__(self, inp, oup, groups=32):
-        super(CoordAtt, self).__init__()
-        self.pool_h = nn.AdaptiveAvgPool2d((None, 1))
-        self.pool_w = nn.AdaptiveAvgPool2d((1, None))
+    def __init__(self, channel,channel， reduction=32):
+        super(CA_Block, self).__init__()
 
-        mip = max(8, inp // groups)
+        self.conv_1x1 = nn.Conv2d(in_channels=channel, out_channels=channel // reduction, kernel_size=1, stride=1, bias=False)
 
-        self.conv1 = nn.Conv2d(inp, mip, kernel_size=1, stride=1, padding=0)
-        self.bn1 = nn.BatchNorm2d(mip)
-        self.conv2 = nn.Conv2d(mip, oup, kernel_size=1, stride=1, padding=0)
-        self.conv3 = nn.Conv2d(mip, oup, kernel_size=1, stride=1, padding=0)
-        self.relu = h_swish()
+        self.relu = nn.ReLU()
+        self.bn = nn.BatchNorm2d(channel // reduction)
+
+        self.F_h = nn.Conv2d(in_channels=channel // reduction, out_channels=channel, kernel_size=1, stride=1, bias=False)
+        self.F_w = nn.Conv2d(in_channels=channel // reduction, out_channels=channel, kernel_size=1, stride=1, bias=False)
+
+        self.sigmoid_h = nn.Sigmoid()
+        self.sigmoid_w = nn.Sigmoid()
 
     def forward(self, x):
-        identity = x
-        n,c,h,w = x.size()
-        x_h = self.pool_h(x)
-        x_w = self.pool_w(x).permute(0, 1, 3, 2)
+        _, _, h, w = x.size()
 
-        y = torch.cat([x_h, x_w], dim=2)
-        y = self.conv1(y)
-        y = self.bn1(y)
-        y = self.relu(y) 
-        x_h, x_w = torch.split(y, [h, w], dim=2)
-        x_w = x_w.permute(0, 1, 3, 2)
+        x_h = torch.mean(x, dim=3, keepdim=True).permute(0, 1, 3, 2)
+        x_w = torch.mean(x, dim=2, keepdim=True)
 
-        x_h = self.conv2(x_h).sigmoid()
-        x_w = self.conv3(x_w).sigmoid()
-        x_h = x_h.expand(-1, -1, h, w)
-        x_w = x_w.expand(-1, -1, h, w)
+        x_cat_conv_relu = self.relu(self.bn(self.conv_1x1(torch.cat((x_h, x_w), 3))))
 
-        y = identity * x_w * x_h
+        x_cat_conv_split_h, x_cat_conv_split_w = x_cat_conv_relu.split([h, w], 3)
 
-        return y
+        s_h = self.sigmoid_h(self.F_h(x_cat_conv_split_h.permute(0, 1, 3, 2)))
+        s_w = self.sigmoid_w(self.F_w(x_cat_conv_split_w))
+
+        out = x * s_h.expand_as(x) * s_w.expand_as(x)
+        return out
 
 class BasicBlock(nn.Module):
     expansion = 1
