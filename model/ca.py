@@ -50,36 +50,25 @@ class swish(nn.Module):
     def forward(self, x):
         return x * torch.sigmoid(x)
     
-class CoordAtt(nn.Module):
-    def __init__(self, channel,channel， reduction=32):
-        super(CA_Block, self).__init__()
+class ELA72(nn.Module):
+    def __init__(self,  channel,_, ks=7):
+        super(ELA72, self).__init__()
 
-        self.conv_1x1 = nn.Conv2d(in_channels=channel, out_channels=channel // reduction, kernel_size=1, stride=1, bias=False)
-
-        self.relu = nn.ReLU()
-        self.bn = nn.BatchNorm2d(channel // reduction)
-
-        self.F_h = nn.Conv2d(in_channels=channel // reduction, out_channels=channel, kernel_size=1, stride=1, bias=False)
-        self.F_w = nn.Conv2d(in_channels=channel // reduction, out_channels=channel, kernel_size=1, stride=1, bias=False)
-
-        self.sigmoid_h = nn.Sigmoid()
-        self.sigmoid_w = nn.Sigmoid()
+        p = ks // 2
+        self.conv = nn.Conv1d(channel, channel, kernel_size=ks, padding=p, groups=channel//8, bias=False)
+        self.gn = nn.GroupNorm(16, channel)
+        self.sig = nn.Sigmoid()
 
     def forward(self, x):
-        _, _, h, w = x.size()
+        b, c, h, w = x.size()
 
-        x_h = torch.mean(x, dim=3, keepdim=True).permute(0, 1, 3, 2)
-        x_w = torch.mean(x, dim=2, keepdim=True)
+        x_h = torch.mean(x, dim=3, keepdim=True).view(b, c, h)
+        x_w = torch.mean(x, dim=2, keepdim=True).view(b, c, w)
 
-        x_cat_conv_relu = self.relu(self.bn(self.conv_1x1(torch.cat((x_h, x_w), 3))))
+        x_h = self.sig(self.gn(self.conv(x_h))).view(b, c, h, 1)
+        x_w = self.sig(self.gn(self.conv(x_w))).view(b, c, 1, w)
 
-        x_cat_conv_split_h, x_cat_conv_split_w = x_cat_conv_relu.split([h, w], 3)
-
-        s_h = self.sigmoid_h(self.F_h(x_cat_conv_split_h.permute(0, 1, 3, 2)))
-        s_w = self.sigmoid_w(self.F_w(x_cat_conv_split_w))
-
-        out = x * s_h.expand_as(x) * s_w.expand_as(x)
-        return out
+        return x * x_h * x_w
 
 class BasicBlock(nn.Module):
     expansion = 1
@@ -92,7 +81,7 @@ class BasicBlock(nn.Module):
         self.conv2 = conv3x3(planes, planes)
         self.bn2 = nn.BatchNorm2d(planes)
 
-        self.coordatt = CoordAtt(planes, planes)
+        self.coordatt = ELA72(planes, planes)
 
         self.downsample = downsample
         self.stride = stride
