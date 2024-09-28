@@ -24,14 +24,6 @@ class LaneTestDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         name = self.list[index].split()[0]
-        print('0',name)
-        parts = name.split('/')  
-        print(parts)
-        parts.insert(1, parts[0])  
-        print(parts)
-        name='/'.join(parts)     
-        print(name)
-        print('self.path',self.path)
         img_path = os.path.join(self.path, name)
         img = loader_func(img_path)
 
