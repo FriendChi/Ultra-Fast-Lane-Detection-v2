@@ -28,7 +28,7 @@ def compute_boundary_weights(labels, alpha=1.0):
     return boundary_weights
 
 class LaneAwareCrossEntropyLoss(nn.Module):
-    def __init__(self, gamma=1.0, connectivity_weight=0.0001):
+    def __init__(self, gamma=1.0, connectivity_weight=0.001):
         super(LaneAwareCrossEntropyLoss, self).__init__()
         self.gamma = gamma  # 权重调节参数
         self.cross_entropy_loss = nn.CrossEntropyLoss(reduction='none')  # 交叉熵损失
