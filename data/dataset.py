@@ -24,9 +24,9 @@ class LaneTestDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         name = self.list[index].split()[0]
-        print(self.path,name)
-        img_path = os.path.join(self.path, name)
         
+        img_path = os.path.join('/kaggle/input/tusimple/TUSimple/test_set', name)
+        print(img_path)
         img = loader_func(img_path)
 
         if self.img_transform is not None:
