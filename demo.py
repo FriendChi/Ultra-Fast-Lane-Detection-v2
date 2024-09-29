@@ -109,12 +109,12 @@ if __name__ == "__main__":
             imgs = imgs.cuda()
             with torch.no_grad():
                 pred = net(imgs)
-            print(cfg.data_root,names[0])
-            vis = cv2.imread(os.path.join(cfg.data_root,names[0]))
+            # print(cfg.data_root,names[0])
+            vis = cv2.imread(os.path.join('/kaggle/input/tusimple/TUSimple/test_set',names[0]))
             coords = pred2coords(pred, cfg.row_anchor, cfg.col_anchor, original_image_width = img_w, original_image_height = img_h)
             for lane in coords:
                 for coord in lane:
                     cv2.circle(vis,coord,5,(0,255,0),-1)
-            vout.write(vis)
+            vout.write(vis1)
         
         vout.release()
