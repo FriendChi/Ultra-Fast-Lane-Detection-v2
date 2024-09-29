@@ -115,6 +115,6 @@ if __name__ == "__main__":
             for lane in coords:
                 for coord in lane:
                     cv2.circle(vis,coord,5,(0,255,0),-1)
-            vout.write(vis1)
+            vout.write(vis)
         
         vout.release()
