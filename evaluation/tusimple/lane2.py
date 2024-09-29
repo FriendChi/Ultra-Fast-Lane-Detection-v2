@@ -58,6 +58,7 @@ class LaneEval(object):
         json_pred = [json.loads(line) for line in open(pred_file, 'r').readlines()]
         # except BaseException as e:
         #     raise Exception('Fail to load json file of the prediction.')
+        print(gt_file)
         json_gt = [json.loads(line) for line in open(gt_file).readlines()]
         if len(json_gt) != len(json_pred):
             raise Exception('We do not get the predictions of all the test tasks')
