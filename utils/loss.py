@@ -36,6 +36,10 @@ class LaneAwareCrossEntropyLoss(nn.Module):
 
     def forward(self, logits, targets):
         loss = self.cross_entropy_loss(logits, targets)
+        # 计算均值和方差
+        mean_loss = loss_ce.mean()
+        std_loss = loss_ce.std()
+        print(mean_loss,std_loss)
         # 计算权重矩阵
         weights = compute_boundary_weights(targets,self.gamma)
         weighted_loss = loss * weights  # 乘以权重矩阵
