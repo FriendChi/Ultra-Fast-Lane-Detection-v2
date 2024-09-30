@@ -24,7 +24,7 @@ class LaneTestDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         name = self.list[index].split()[0]
-        img_path = os.path.join('/kaggle/input/d/bnyadmohammed/curvelanes/Curvelanes', name)
+        img_path = os.path.join('/kaggle/input/curvelanes/Curvelanes', name)
         img = loader_func(img_path)
 
         if self.img_transform is not None:
