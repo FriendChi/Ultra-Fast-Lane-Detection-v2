@@ -935,25 +935,47 @@ def eval_lane(net, cfg, ep = None, logger = None):
             return F
         else:
             return None
+    # 如果配置中的数据集是'Tusimple'
     elif cfg.dataset == 'Tusimple':
+        # 设置实验的名称为'tusimple_eval_tmp'
         exp_name = 'tusimple_eval_tmp'
-        run_test_tusimple(net, cfg.data_root, cfg.test_work_dir, exp_name, cfg.distributed, cfg.crop_ratio, cfg.train_width, cfg.train_height, row_anchor = cfg.row_anchor, col_anchor = cfg.col_anchor)
-        synchronize()  # wait for all results
+        
+        # 运行Tusimple数据集的测试，传入网络模型、数据根目录、测试工作目录、实验名称等参数
+        run_test_tusimple(net, cfg.data_root, cfg.test_work_dir, exp_name, cfg.distributed, cfg.crop_ratio, cfg.train_width, cfg.train_height, row_anchor=cfg.row_anchor, col_anchor=cfg.col_anchor)
+        
+        # 同步所有进程，确保所有结果都已生成
+        synchronize()  
+
+        # 判断当前是否为主进程
         if is_main_process():
-            combine_tusimple_test(cfg.test_work_dir,exp_name)
-            res = LaneEval.bench_one_submit(os.path.join(cfg.test_work_dir,exp_name + '.txt'),os.path.join('/kaggle/input/tusimple/TUSimple','test_label.json'))
+            # 合并Tusimple的测试结果
+            combine_tusimple_test(cfg.test_work_dir, exp_name)
+            
+            # 使用LaneEval工具对测试结果进行评估，与真实的标签文件进行对比
+            res = LaneEval.bench_one_submit(os.path.join(cfg.test_work_dir, exp_name + '.txt'), os.path.join('/kaggle/input/tusimple/TUSimple', 'test_label.json'))
+            
+            # 将评估结果从json字符串转换为Python字典
             res = json.loads(res)
+            
+            # 遍历评估结果，并打印
             for r in res:
                 dist_print(r['name'], r['value'])
+                
+                # 如果logger对象存在，则将评估结果添加到logger中
                 if logger is not None:
-                    logger.add_scalar('TuEval/'+r['name'],r['value'],global_step = ep)
+                    logger.add_scalar('TuEval/' + r['name'], r['value'], global_step=ep)
+        
+        # 再次同步所有进程，确保所有打印和记录操作已完成
         synchronize()
+        
+        # 如果是主进程，则遍历评估结果，找到'F1'值并返回
         if is_main_process():
             for r in res:
                 if r['name'] == 'F1':
                     return r['value']
+        # 如果不是主进程，则返回None
         else:
-            return None
+            return None    
 
 
 def read_helper(path):

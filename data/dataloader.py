@@ -71,6 +71,7 @@ def get_test_loader(batch_size, data_root,dataset, distributed, crop_ratio, trai
             transforms.ToTensor(),
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
+        #第二个参数即读取的列表
         test_dataset = LaneTestDataset(data_root.replace('train_set','test_set'),os.path.join('/kaggle/working/', 'test.txt'), img_transform = img_transforms, crop_size=train_height)
     elif dataset == 'CurveLanes':
         img_transforms = transforms.Compose([
