@@ -1042,7 +1042,7 @@ def call_curvelane_eval(data_dir, exp_name,output_path):
     x_factor = 224 / 2560
     y_factor = 224 / 1440
     frame=1
-    list0 = os.path.join(data_dir, 'valid', 'valid_for_culane_style.txt')
+    list0 = os.path.join('/kaggle/input/curve-val/images', 'valid_for_culane_style.txt')
     if not os.path.exists(os.path.join(output_path,'txt')):
         os.mkdir(os.path.join(output_path,'txt'))
     out0=os.path.join(output_path,'txt','out0_curve.txt')
