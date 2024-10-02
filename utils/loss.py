@@ -29,7 +29,7 @@ def compute_boundary_weights(labels, alpha=1.0):
 
 
 class LaneAwareCrossEntropyLoss(nn.Module):
-    def __init__(self, gamma=0.1):
+    def __init__(self, gamma=2):
         super(LaneAwareCrossEntropyLoss, self).__init__()
         self.gamma = gamma  # 调节参数
         self.cross_entropy_loss = nn.CrossEntropyLoss(reduction='none')  # 交叉熵损失
@@ -37,11 +37,11 @@ class LaneAwareCrossEntropyLoss(nn.Module):
     def forward(self, logits, targets):
         loss = self.cross_entropy_loss(logits, targets)
         # 计算均值和方差
-        mean_loss = loss.mean()
+        # mean_loss = loss.mean()
         std_loss = loss.std()
-        print(mean_loss,std_loss)
+        # print(mean_loss,std_loss)
         # 计算权重矩阵
-        weights = compute_boundary_weights(targets,self.gamma)
+        weights = compute_boundary_weights(targets,std_loss*self.gamma)
         weighted_loss = loss * weights  # 乘以权重矩阵
         
         # 取平均得到最终损失
