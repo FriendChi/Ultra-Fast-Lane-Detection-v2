@@ -22,7 +22,7 @@ if __name__ == "__main__":
     
     for k, v in state_dict.items():
         # 去掉多余的 "model."
-        k = k.replace('model.', '')  # 去掉 "model." 前缀
+        # k = k.replace('model.', '')  # 去掉 "model." 前缀
         if 'module.' in k:
             compatible_state_dict[k[7:]] = v  # 去掉 "module." 前缀
         else:
