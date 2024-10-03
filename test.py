@@ -17,15 +17,18 @@ if __name__ == "__main__":
 
     net = get_model(cfg)
 
-    state_dict = torch.load(cfg.test_model, map_location = 'cpu')['model']
+    state_dict = torch.load(cfg.test_model, map_location='cpu')['model']
     compatible_state_dict = {}
+    
     for k, v in state_dict.items():
+        # 去掉多余的 "model."
+        k = k.replace('model.', '')  # 去掉 "model." 前缀
         if 'module.' in k:
-            compatible_state_dict[k[7:]] = v
+            compatible_state_dict[k[7:]] = v  # 去掉 "module." 前缀
         else:
             compatible_state_dict[k] = v
-
-    net.load_state_dict(compatible_state_dict, strict = True)
+    
+    net.load_state_dict(compatible_state_dict, strict=True)
 
     if distributed:
         net = torch.nn.parallel.DistributedDataParallel(net, device_ids = [args.local_rank])
