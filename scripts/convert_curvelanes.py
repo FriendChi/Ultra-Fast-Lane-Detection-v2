@@ -60,7 +60,7 @@ def draw(im, line, idx, ratio_height = 1, ratio_width = 1, show = False):
         
     
     for i in range(len(line_x)-1):
-        cv2.line(im,pt0,(int(line_x[i+1]),int(line_y[i+1])),(idx,255,255),thickness = 16)
+        cv2.line(im,pt0,(int(line_x[i+1]),int(line_y[i+1])),(255,255,255),thickness = 16)
         pt0 = (int(line_x[i+1]),int(line_y[i+1]))
 
 
