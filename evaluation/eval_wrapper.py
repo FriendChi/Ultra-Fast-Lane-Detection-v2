@@ -307,6 +307,13 @@ def revise_lines_curve_combine(names, output_path):
         if flag:
             fp = open(line_save_path, 'w')
             fp.close()
+        with open(line_save_path, 'r') as f:
+            lines = f.readlines()
+        # 去除空行
+        lines = [line for line in lines if line.strip()]
+
+        with open(line_save_path, 'w') as f:
+            f.writelines(lines)
 
 def generate_lines_reg(out, out_ext, names, output_path, mode='normal', row_anchor = None):
     batch_size, num_grid_row, num_cls, num_lane = out.shape
