@@ -165,12 +165,11 @@ int main(int argc, char **argv)
     {
         // 获取图像文件名
         auto sub_im_name = filelists[i];
-		cout<<'sub_im_name:'<<sub_im_name<<endl;
+		// cout<<'sub_im_name:'<<sub_im_name<<endl;
         string full_im_name = im_dir + sub_im_name;  // 完整的图像文件路径
         string sub_txt_name = sub_im_name.substr(0, sub_im_name.find_last_of(".")) + ".lines.txt";  // 车道线标注文件名
-        cout<<'sub_txt_name:'<<sub_txt_name<<endl;
-		return 0;
-		string anno_file_name = anno_dir + sub_txt_name;  // 完整的标注文件路径
+        string filename = sub_txt_name.substr(0, sub_txt_name.find_last_of("."));
+		string anno_file_name = anno_dir + filename;  // 完整的标注文件路径
         string detect_file_name = detect_dir + sub_txt_name;  // 完整的检测文件路径
 		// cout<<"detect_file_name "<<detect_file_name<<endl<<"anno_file: "<<anno_file_name<<endl;
         // 读取标注车道线和检测车道线，按缩放因子缩放
