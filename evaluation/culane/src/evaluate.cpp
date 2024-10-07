@@ -182,13 +182,17 @@ int main(int argc, char **argv)
         vector<vector<Point2f>> detect_lanes;  // 检测车道线
 
 		if (fileExists(anno_file_name)) {
-			
+			if(i=2){
+				std::cout << "检测文件存在: " << anno_file_name << std::endl;
+			}			
 		} else {
 			std::cout << "标注文件不存在: " << anno_file_name << std::endl;
 		}
 
 		if (fileExists(detect_file_name)) {
-			
+			if(i=2){
+				std::cout << "检测文件存在: " << detect_file_name << std::endl;
+			}
 		} else {
 			std::cout << "检测文件不存在: " << detect_file_name << std::endl;
 		}
