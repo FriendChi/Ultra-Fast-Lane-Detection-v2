@@ -42,6 +42,11 @@ void help(void)
 void read_lane_file(const string &file_name, vector<vector<Point2f> > &lanes, float x_factor, float y_factor);
 void visualize(string &full_im_name, vector<vector<Point2f> > &anno_lanes, vector<vector<Point2f> > &detect_lanes, vector<int> anno_match, int width_lane);
 
+bool fileExists(const std::string& filename) {
+    std::ifstream file(filename);
+    return file.good();
+}
+
 int main(int argc, char **argv)
 {
     // 初始化一些默认参数
@@ -175,6 +180,19 @@ int main(int argc, char **argv)
         // 读取标注车道线和检测车道线，按缩放因子缩放
         vector<vector<Point2f>> anno_lanes;  // 标注车道线
         vector<vector<Point2f>> detect_lanes;  // 检测车道线
+
+		if (fileExists(anno_file_name)) {
+			
+		} else {
+			std::cout << "标注文件不存在: " << anno_file_name << std::endl;
+		}
+
+		if (fileExists(detect_file_name)) {
+			
+		} else {
+			std::cout << "检测文件不存在: " << detect_file_name << std::endl;
+		}
+
         read_lane_file(anno_file_name, anno_lanes, x_factor, y_factor);  // 读取标注车道线
         read_lane_file(detect_file_name, detect_lanes, x_factor, y_factor);  // 读取检测车道线
 
