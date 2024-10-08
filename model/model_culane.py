@@ -45,7 +45,7 @@ class parsingNet(torch.nn.Module):
 
         x2,x3,fea = self.model(x)
         
-        return None
+        return pred_dict
 
     def forward_tta(self, x):
         x2,x3,fea = self.model(x)
