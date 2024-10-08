@@ -657,6 +657,7 @@ def run_test_tta(dataset, net, data_root, exp_name, work_dir,distributed, crop_r
     # import pdb;pdb.set_trace()
     for i, data in enumerate(dist_tqdm(loader)):
         imgs, names = data
+        print(names)
         imgs = imgs.cuda()
         with torch.no_grad():
             if hasattr(net, 'module'):
@@ -673,6 +674,7 @@ def run_test_tta(dataset, net, data_root, exp_name, work_dir,distributed, crop_r
 
         generate_lines_local_tta(loc_row, loc_row_left, loc_row_right, exist_row, exist_row_left, exist_row_right, names, output_path, row_anchor)
         generate_lines_col_local_tta(loc_col, loc_col_up, loc_col_down, exist_col, exist_col_up, exist_col_down, names, output_path, col_anchor)
+        break
 
 def generate_tusimple_lines(row_out, row_ext, col_out, col_ext, row_anchor = None, col_anchor = None, mode = '2row2col'):
     tusimple_h_sample = np.linspace(160, 710, 56)
