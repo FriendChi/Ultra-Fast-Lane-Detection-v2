@@ -33,10 +33,4 @@ if __name__ == "__main__":
     if not os.path.exists(cfg.test_work_dir):
         os.mkdir(cfg.test_work_dir)
 
-    loader = get_test_loader(batch_size,data_root,'Tusimple', distributed, crop_ratio, train_width, train_height)
-    for data in dist_tqdm(loader):
-        imgs,names = data
-        imgs = imgs.cuda()
-        with torch.no_grad():
-            pred = net(imgs)
-
+    eval_lane(net, cfg)
