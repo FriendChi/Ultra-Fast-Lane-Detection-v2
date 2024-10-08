@@ -819,6 +819,7 @@ def run_test_tusimple(net,data_root,work_dir,exp_name, distributed, crop_ratio, 
             json_str = json.dumps(tmp_dict)
 
             fp.write(json_str+'\n')
+        break
     fp.close()
 
 def combine_tusimple_test(work_dir,exp_name):
