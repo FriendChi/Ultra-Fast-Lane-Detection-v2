@@ -163,8 +163,7 @@ int main(int argc, char **argv)
     // 创建一个存储匹配结果的容器 tuple_lists
     vector<tuple<vector<int>, long, long, long, long>> tuple_lists;
     tuple_lists.resize(filelists.size());  // 根据文件列表的大小调整大小
-    // 查找最后一个斜杠的位置
-    size_t lastSlashPos = str.find_last_of('/');
+
     // 使用 OpenMP 并行处理每个图像文件的车道线匹配
     #pragma omp parallel for
     for (int i = 0; i < filelists.size(); i++)
@@ -178,6 +177,8 @@ int main(int argc, char **argv)
         string full_im_name = im_dir + sub_im_name;  // 完整的图像文件路径
         string sub_txt_name = sub_im_name.substr(0, sub_im_name.find_last_of(".")) + ".lines.txt";  // 车道线标注文件名
 	        // 从最后一个斜杠之后的位置提取文件名
+	    // 查找最后一个斜杠的位置
+    	size_t lastSlashPos = sub_txt_name.find_last_of('/');
     	string filename = sub_txt_name.substr(lastSlashPos + 1);
 	string anno_file_name = anno_dir + filename;  // 完整的标注文件路径
         string detect_file_name = detect_dir + sub_txt_name;  // 完整的检测文件路径
