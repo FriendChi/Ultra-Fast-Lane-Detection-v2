@@ -3,6 +3,7 @@ from torch import nn
 from torch.nn.parameter import Parameter
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 
 class eca_layer(nn.Module):
@@ -17,6 +18,7 @@ class eca_layer(nn.Module):
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.conv = nn.Conv1d(1, 1, kernel_size=k_size, padding=(k_size - 1) // 2, bias=False) 
         self.sigmoid = nn.Sigmoid()
+        self.channel = channel
 
     def find_next_available_index(self,save_dir="attention_weights"):
         i = 0
@@ -48,7 +50,7 @@ class eca_layer(nn.Module):
             sns.heatmap(weights, cmap='viridis', cbar=True, annot=True)
             
             # 保存热图为图片
-            plt.savefig(os.path.join(save_dir, f"attention_weights_{batch}_{i}.png"), bbox_inches='tight', dpi=300)  # 设置 dpi 以提高分辨率
+            plt.savefig(os.path.join(save_dir, f"attention_weights_{batch}_{i}_{self.channel}.png"), bbox_inches='tight', dpi=300)  # 设置 dpi 以提高分辨率
             plt.close()  # 关闭当前图形，释放内存
     
     def forward(self, x):
