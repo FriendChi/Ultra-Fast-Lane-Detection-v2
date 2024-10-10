@@ -11,7 +11,9 @@ from utils.common import get_work_dir, get_logger,save_bestmodel
 import time
 from evaluation.eval_wrapper import eval_lane
 import random,os
-import numpy as np
+import json
+
+
 def train(net, data_loader, loss_dict, optimizer, scheduler,logger, epoch, metric_dict, dataset):
     net.train()
     progress_bar = dist_tqdm(train_loader)
@@ -140,5 +142,6 @@ if __name__ == "__main__":
             #save_bestmodel(net, optimizer, epoch, work_dir, distributed)
         save_model(net, optimizer, epoch, work_dir, distributed)
         logger.add_scalar('CuEval/X',max_res,global_step = epoch)
-        break
+        if resume_epoch+5 == epoch:
+            break
     logger.close()
