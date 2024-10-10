@@ -48,5 +48,6 @@ def fun(mean_feature_map,num):
     plt.close()  # 关闭当前图形
 
 for i,map in enumerate(l):
+    print(map.shape)
     fun(map,i)
 
