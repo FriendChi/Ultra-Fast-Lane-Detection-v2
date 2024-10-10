@@ -39,7 +39,10 @@ plt.colorbar()  # 显示颜色条
 plt.title('Heatmap')
 plt.xlabel('Width')
 plt.ylabel('Height')
-plt.show()
+
+# 保存热图
+plt.savefig('heatmap.png', bbox_inches='tight')  # 可以指定路径和文件名
+plt.close()  # 关闭当前图形
 
 
 
