@@ -27,7 +27,7 @@ y,feature_map,fea3,fea2,fea1 = net(x)
 
 l = [feature_map,fea3,fea2,fea1]
 
-def fun(mean_feature_map,num):
+def fun(feature_map,num):
     # 计算在通道维度上的平均值，得到形状为 (1, 25, 40)
     mean_feature_map = feature_map.mean(dim=1, keepdim=True)  # 保持维度为 1
     mean_feature_map = mean_feature_map.squeeze(0).detach().cpu().numpy()  # 转换为 NumPy 数组
