@@ -44,7 +44,7 @@ def fun(mean_feature_map,num):
     plt.ylabel('Height')
     
     # 保存热图
-    plt.savefig('heatmap_{num}.png', bbox_inches='tight')  # 可以指定路径和文件名
+    plt.savefig(f'heatmap_{num}.png', bbox_inches='tight')  # 可以指定路径和文件名
     plt.close()  # 关闭当前图形
 
 for i,map in enumerate(l):
