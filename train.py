@@ -9,6 +9,7 @@ from utils.common import calc_loss, get_model, get_train_loader, inference, merg
 from utils.common import get_work_dir, get_logger,save_bestmodel
 
 import time
+import numpy as np
 from evaluation.eval_wrapper import eval_lane
 import random,os
 import json
