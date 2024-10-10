@@ -62,8 +62,8 @@ class eca_layer(nn.Module):
 
         # Multi-scale information fusion
         y = self.sigmoid(y)
-        print(y.shape)
-        self.save_attention_weights(y)
+        # print(y.shape)
+        # self.save_attention_weights(y)
 
         return x * y.expand_as(x)
         
