@@ -187,21 +187,21 @@ int main(int argc, char **argv)
         vector<vector<Point2f>> anno_lanes;  // 标注车道线
         vector<vector<Point2f>> detect_lanes;  // 检测车道线
 
-		if (fileExists(anno_file_name)) {
+		// if (fileExists(anno_file_name)) {
 			
-			std::cout << "检测文件存在: " << anno_file_name << std::endl;
+		// 	std::cout << "检测文件存在: " << anno_file_name << std::endl;
 						
-		} else {
-			std::cout << "标注文件不存在: " << anno_file_name << std::endl;
-		}
+		// } else {
+		// 	std::cout << "标注文件不存在: " << anno_file_name << std::endl;
+		// }
 
-		if (fileExists(detect_file_name)) {
+		// if (fileExists(detect_file_name)) {
 			
-			std::cout << "检测文件存在: " << detect_file_name << std::endl;
+		// 	std::cout << "检测文件存在: " << detect_file_name << std::endl;
 			
-		} else {
-			std::cout << "检测文件不存在: " << detect_file_name << std::endl;
-		}
+		// } else {
+		// 	std::cout << "检测文件不存在: " << detect_file_name << std::endl;
+		// }
 
         read_lane_file(anno_file_name, anno_lanes, x_factor, y_factor);  // 读取标注车道线
         read_lane_file(detect_file_name, detect_lanes, x_factor, y_factor);  // 读取检测车道线
