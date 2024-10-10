@@ -13,7 +13,7 @@ class resnet(torch.nn.Module):
     
     
     def forward(self,x):
-        x = self.model(x)
+        x,x3,x2,x1 = self.model(x)
         
 
-        return None,None,x
+        return None,None,x,x3,x2,x1
