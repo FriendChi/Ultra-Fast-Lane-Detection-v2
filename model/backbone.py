@@ -13,7 +13,9 @@ class resnet(torch.nn.Module):
     
     
     def forward(self,x):
+        print('1:',x.shape)
         x = self.model(x)
+        print('2:',x.shape)
         
 
         return None,None,x
