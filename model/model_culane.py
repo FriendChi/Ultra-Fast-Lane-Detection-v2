@@ -44,6 +44,7 @@ class parsingNet(torch.nn.Module):
     def forward(self, x):
 
         x2,x3,fea = self.model(x)
+        f = fea
         if self.use_aux:
             seg_out = self.seg_head(x2, x3,fea)
         fea = self.pool(fea)
@@ -61,7 +62,7 @@ class parsingNet(torch.nn.Module):
         if self.use_aux:
             pred_dict['seg_out'] = seg_out
         
-        return pred_dict,fea
+        return pred_dict,f
 
     def forward_tta(self, x):
         x2,x3,fea = self.model(x)
