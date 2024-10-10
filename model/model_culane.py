@@ -47,8 +47,9 @@ class parsingNet(torch.nn.Module):
         f = fea
         if self.use_aux:
             seg_out = self.seg_head(x2, x3,fea)
+        print('pool before:',fea.shape)
         fea = self.pool(fea)
-        # print(fea.shape)
+        print('pool after:',fea.shape)
         # print(self.coord.shape)
         # fea = torch.cat([fea, self.coord.repeat(fea.shape[0],1,1,1)], dim = 1)
         
