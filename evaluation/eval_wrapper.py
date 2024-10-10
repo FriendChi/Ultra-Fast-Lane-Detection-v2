@@ -801,6 +801,7 @@ def generate_tusimple_lines(row_out, row_ext, col_out, col_ext, row_anchor = Non
 def run_test_tusimple(net,data_root,work_dir,exp_name, distributed, crop_ratio, train_width, train_height, batch_size = 8, row_anchor = None, col_anchor = None):
     output_path = os.path.join(work_dir,exp_name+'.%d.txt'% get_rank())
     fp = open(output_path,'w')
+    image_names = []
     loader = get_test_loader(batch_size,data_root,'Tusimple', distributed, crop_ratio, train_width, train_height)
     for data in dist_tqdm(loader):
         imgs,names = data
@@ -819,8 +820,12 @@ def run_test_tusimple(net,data_root,work_dir,exp_name, distributed, crop_ratio, 
             json_str = json.dumps(tmp_dict)
 
             fp.write(json_str+'\n')
-        break
+            image_names.append(name)
     fp.close()
+    # 保存图片名称到另外的 JSON 文件
+    image_names_path = os.path.join(work_dir, 'image_names.json')
+    with open(image_names_path, 'w') as image_fp:
+        json.dump(image_names, image_fp)  # 将列表写入 JSON 文件
 
 def combine_tusimple_test(work_dir,exp_name):
     size = get_world_size()
