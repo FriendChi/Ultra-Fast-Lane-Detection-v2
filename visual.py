@@ -6,7 +6,7 @@ from PIL import Image
 import numpy as np
 from utils.common import get_model, merge_config
 import torchvision.transforms as transforms
-image_path = 'path_to_image.jpg'  # 替换为你的图片路径
+image_path = '/kaggle/input/tusimple/TUSimple/test_set/clips/0530/1492626047222176976_0/1.jpg'  # 替换为你的图片路径
 torch.backends.cudnn.benchmark = True
 args, cfg = merge_config()
 net = get_model(cfg)
