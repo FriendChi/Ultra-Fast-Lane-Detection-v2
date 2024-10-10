@@ -21,7 +21,7 @@ img = Image.open(image_path)  # 打开图片
 img_tensor = img_transforms(img)  # 预处理
 img_tensor = img_tensor.unsqueeze(0)  # 增加 batch 维度，形状变为 (1, 3, cfg.train_height, cfg.train_width)
 x = img_tensor.cuda()  # 移动到 GPU 上
-
+print('x:',x.shape)
 
 y,feature_map = net(x)
 
