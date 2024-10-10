@@ -12,7 +12,7 @@ args, cfg = merge_config()
 net = get_model(cfg)
 net.eval()
 img_transforms = transforms.Compose([
-    transforms.Resize((int(cfg.train_height / cfg.crop_ratio), cfg.train_width)),
+    transforms.Resize((int(cfg.train_height), cfg.train_width)),
     transforms.ToTensor(),
     transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
 ])
