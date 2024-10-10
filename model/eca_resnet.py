@@ -132,12 +132,12 @@ class ResNet(nn.Module):
         x = self.relu(x)
         x = self.maxpool(x)
 
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
+        x1 = self.layer1(x)
+        x2 = self.layer2(x1)
+        x3 = self.layer3(x2)
+        x = self.layer4(x3)
 
-        return x
+        return x,x3,x2,x1
 
 
 def eca_resnet18(k_size=[3, 3, 3, 3], num_classes=1_000, pretrained=False):
