@@ -114,6 +114,7 @@ if __name__ == "__main__":
             coords = pred2coords(pred, cfg.row_anchor, cfg.col_anchor, original_image_width = img_w, original_image_height = img_h)
             for lane in coords:
                 for coord in lane:
+                    pass
                     # cv2.circle(vis,coord,5,(0,255,0),-1)
             vout.write(vis)
         
