@@ -137,7 +137,7 @@ class ResNet(nn.Module):
         x3 = self.layer3(x2)
         x = self.layer4(x3)
 
-        return x,x3,x2,x1
+        return x
 
 
 def eca_resnet18(k_size=[3, 3, 3, 3], num_classes=1_000, pretrained=False):
